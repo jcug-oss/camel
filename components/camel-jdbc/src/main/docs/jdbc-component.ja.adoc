@@ -45,8 +45,8 @@ JDBC コンポーネントは, 以下の 2 つのオプションをサポート�
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
 | 名前 | 説明 | デフォルト値 | 型
-| *dataSource* (producer) | To use the DataSource instance instead of looking up the data source by name from the registry. |  | DataSource
-| *resolveProperty Placeholders* (advanced) | Whether the component should resolve property placeholders on itself when starting. Only properties which are of String type can use property placeholders. | true | boolean
+| *dataSource* (producer) | レジストリから名前でデータソースを検索する代わりに, データソースのインスタンスを使用する. |  | DataSource
+| *resolveProperty Placeholders* (advanced) | 開始時に, コンポーネントが自分自身のプロパティプレースホルダを解決すべきかを指定する. String 型のプロパティのみがプロパティプレースホルダに利用できる. | true | boolean
 |===
 // component options: END
 
@@ -56,21 +56,21 @@ JDBC コンポーネントは, 以下の 2 つのオプションをサポート�
 
 
 // endpoint options: START
-The JDBC endpoint is configured using URI syntax:
+JDBC エンドポイントは, URI シンタックスを利用して設定される:
 
 ----
 jdbc:dataSourceName
 ----
 
-with the following path and query parameters:
+また、次のパスとクエリパラメータで設定される:
 
-==== Path Parameters (1 parameters):
+==== Path パラメータ (1 parameters):
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
-| Name | Description | Default | Type
-| *dataSourceName* | *Required* Name of DataSource to lookup in the Registry. If the name is dataSource or default, then Camel will attempt to lookup a default DataSource from the registry, meaning if there is a only one instance of DataSource found, then this DataSource will be used. |  | String
+| 名前 | 説明 | デフォルト値 | 型
+| *dataSourceName* | *必須* Name of DataSource to lookup in the Registry. If the name is dataSource or default, then Camel will attempt to lookup a default DataSource from the registry, meaning if there is a only one instance of DataSource found, then this DataSource will be used. |  | String
 |===
 
 
@@ -99,7 +99,7 @@ with the following path and query parameters:
 // spring-boot-auto-configure options: START
 === Spring Boot Auto-Configuration
 
-When using Spring Boot make sure to use the following Maven dependency to have support for auto configuration:
+Spring Boot を利用する場合は, 自動設定を有効にするために, 次の Maven 依存性を使用していることを確認すること:
 
 [source,xml]
 ----
@@ -112,7 +112,7 @@ When using Spring Boot make sure to use the following Maven dependency to have s
 ----
 
 
-The component supports 3 options, which are listed below.
+このコンポーネントは, 以下の 3 つのオプションをサポートする.
 
 
 
