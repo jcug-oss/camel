@@ -1,7 +1,7 @@
 [[jdbc-component]]
 == JDBC コンポーネント
 
-*Camel version 1.2から利用可能*
+*Camel version 1.2 から利用可能*
 
 *jdbc* コンポーネントは JDBC 経由でデータベースにアクセスでき, 
 SQL のクエリ(SELECT)や操作(INSERT, UPDATE その他)は, メッセージボディで送信される.
@@ -35,7 +35,7 @@ jdbc:dataSourceName[?options]
 次の書式で, URI にクエリオプションを追加できる.
 `?option=value&option=value&...`
 
-=== Options
+=== オプション
 
 // component options: START
 JDBC コンポーネントは, 以下の 2 つのオプションをサポートする.
@@ -74,7 +74,7 @@ jdbc:dataSourceName
 |===
 
 
-==== Query Parameters (13 parameters):
+==== Query パラメータ (13 parameters):
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
@@ -125,18 +125,15 @@ Spring Boot を利用する場合は, 自動設定を有効にするために, �
 |===
 // spring-boot-auto-configure options: END
 
-=== Result
+=== 結果
 
-By default the result is returned in the OUT body as an
-`ArrayList<HashMap<String, Object>>`. The `List` object contains the
-list of rows and the `Map` objects contain each row with the `String`
-key as the column name. You can use the option `outputType` to control
-the result.
+デフォルトでは, 結果は `ArrayList<HashMap<String, Object>>` として OUT ボディ内に設定されて返却される.
+`List` オブジェクトは行のリストを含んでおり, `Map` はカラム名として `String` を保持した各行の値を含んでいる.
+結果を制御するために, オプションの `outputType` が使用できる.
 
-*Note:* This component fetches `ResultSetMetaData` to be able to return
-the column name as the key in the `Map`.
+*注意:* このコンポーネントは, `Map` 内でキーとしてカラム名を返却するために `ResultSetMetaData` を取得する.
 
-==== Message Headers
+==== Message ヘッダ
 
 [width="100%",cols="10%,90%",options="header",]
 |===
@@ -160,9 +157,9 @@ type.
 `useHeadersAsParameters` has been enabled.
 |===
 
-=== Generated keys
+=== キーの生成
 
-*Available as of Camel 2.10*
+*Camel 2.10 から利用可能*
 
 If you insert data using SQL INSERT, then the RDBMS may support auto
 generated keys. You can instruct the <<jdbc-component,JDBC>> producer to
