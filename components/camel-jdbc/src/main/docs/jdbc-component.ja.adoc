@@ -64,17 +64,17 @@ jdbc:dataSourceName
 
 また、次のパスとクエリパラメータで設定される:
 
-==== Path パラメータ (1 parameters):
+==== パスパラメータ (1 parameters):
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
 | 名前 | 説明 | デフォルト値 | 型
-| *dataSourceName* | *必須* Name of DataSource to lookup in the Registry. If the name is dataSource or default, then Camel will attempt to lookup a default DataSource from the registry, meaning if there is a only one instance of DataSource found, then this DataSource will be used. |  | String
+| *dataSourceName* | *必須* レジストリ内で検索するデータソースの名前. 名前がデータソースもしくはデフォルトの場合は, Camel はレジストリからデフォルトのデータソースを検索する. ただ 1 つのデータソースのインスタンスが見つかった場合は, そのデータソースが使用される. |  | String
 |===
 
 
-==== Query パラメータ (13 parameters):
+==== クエリパラメータ (13 parameters):
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
@@ -176,12 +176,10 @@ test] を参照すること.
 
 *Camel 2.12 から利用可能*
 
-In the given route below, we want to get all the projects from the
-projects table. Notice the SQL query has 2 named parameters, :?lic and
-:?min. +
- Camel will then lookup these parameters from the message headers.
-Notice in the example above we set two headers with constant value
- for the named parameters:
+以下のルートでは, プロジェクトテーブルから全てのプロジェクトを取得して使用としている.
+SQL クエリが, :?lic と :?min. の 2 つのパラメータを持っていることに注意すること. +
+Camel はメッセージヘッダから, これらのパラメータを検索する. この例では, 名前付きパラメータのために
+2 つの定数の値を 2 つのヘッダに設定していることに注意すること:
 
 [source,java]
 ----
@@ -192,8 +190,7 @@ Notice in the example above we set two headers with constant value
      .to("jdbc:myDataSource?useHeadersAsParameters=true")
 ----
 
-You can also store the header values in a `java.util.Map` and store the
-map on the headers with the key `CamelJdbcParameters`.
+ヘッダの値を `java.util.Map` 内に保持することもできて, その場合はキー名を `CamelJdbcParameters` としてヘッダに格納すること.
 
 === Samples
 
