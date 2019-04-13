@@ -161,22 +161,20 @@ type.
 
 *Camel 2.10 から利用可能*
 
-If you insert data using SQL INSERT, then the RDBMS may support auto
-generated keys. You can instruct the <<jdbc-component,JDBC>> producer to
-return the generated keys in headers. +
- To do that set the header `CamelRetrieveGeneratedKeys=true`. Then the
-generated keys will be provided as headers with the keys listed in the
-table above.
+INSERT 文を使ってデータを挿入すると, RDBMS は自動生成されたキーをサポートする場合がある.
+<<jdbc-component,JDBC>> プロデューサに, 自動生成されたキーをヘッダに設定して返却するように指定することが可能である. +
+そのためには, ヘッダに `CamelRetrieveGeneratedKeys=true` を設定する.
+この設定により, 自動生成されたキーは上記の表のキーと共にヘッダに設定されて返却される。
 
-You can see more details in this
+より詳細な情報は
 https://svn.apache.org/repos/asf/camel/trunk/components/camel-jdbc/src/test/java/org/apache/camel/component/jdbc/JdbcGeneratedKeysTest.java[unit
-test].
+test] を参照すること.
 
-Using generated keys does not work with together with named parameters.
+自動生成キーを使用することは, 名前付きパラメータと同時には機能しない.
 
-=== Using named parameters
+=== 名前付きパラメータの使用
 
-*Available as of Camel 2.12*
+*Camel 2.12 から利用可能*
 
 In the given route below, we want to get all the projects from the
 projects table. Notice the SQL query has 2 named parameters, :?lic and
