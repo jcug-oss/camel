@@ -81,7 +81,7 @@ jdbc:dataSourceName
 |===
 | 名前 | 説明 | デフォルト値 | 型
 | *allowNamedParameters* (producer) | クエリ内で名前付きパラメータの使用を許可するか否かを指定する. | true | boolean
-| *outputClass* (producer) | Specify the full package and class name to use as conversion when outputType=SelectOne or SelectList. |  | String
+| *outputClass* (producer) | outputType に SelectOne もしくは SelectList を指定した場合に, 変換のために完全なパッケージとクラス名を指定する. |  | String
 | *outputType* (producer) | Determines the output the producer should use. | SelectList | JdbcOutputType
 | *parameters* (producer) | Optional parameters to the java.sql.Statement. For example to set maxRows, fetchSize etc. |  | Map
 | *readSize* (producer) | The default maximum number of rows that can be read by a polling query. The default value is 0. |  | int
