@@ -192,25 +192,21 @@ Camel はメッセージヘッダから, これらのパラメータを検索す
 
 ヘッダの値を `java.util.Map` 内に保持することもできて, その場合はキー名を `CamelJdbcParameters` としてヘッダに格納すること.
 
-=== Samples
+=== サンプル
 
-In the following example, we fetch the rows from the customer table.
+以下の例では, カスタマー表から行を取得している.
 
-First we register our datasource in the Camel registry as `testdb`:
+まず, `testdb` として Camel にデータソースを登録する:
 
-Then we configure a route that routes to the JDBC component, so the SQL
-will be executed. Note how we refer to the `testdb` datasource that was
-bound in the previous step:
+それから SQL が実行されるように JDBC コンポーネントへのルートを定義する.
+前の手順で, 登録した `testdb` データソースをどのように参照しているかに注意すること:
 
-Or you can create a `DataSource` in Spring like this:
+もしくは Spring のように, 以下のようにして `DataSource` を作成することも可能である:
 
-We create an endpoint, add the SQL query to the body of the IN message,
-and then send the exchange. The result of the query is returned in the
-OUT body:
+エンドポイントを作成し, IN メッセージのボディに SQL クエリを追加して, exchange を送信する.
+クエリの結果は OUT ボディに設定されて返却される:
 
-If you want to work on the rows one by one instead of the entire
-ResultSet at once you need to use the Splitter EIP
-such as:
+ResultSet で行全体を扱うよりも, 1 行ずつ扱いたい場合は, Splitter EIP を使用する必要がある:
 
 [source,java]
 ----
@@ -224,7 +220,7 @@ from("direct:hello")
   .to("mock:result");
 ----
 
-=== Sample - Polling the database every minute
+=== サンプル - 毎分データベースをポーリングする
 
 If we want to poll a database using the JDBC component, we need to
 combine it with a polling scheduler such as the <<timer-component,Timer>>
