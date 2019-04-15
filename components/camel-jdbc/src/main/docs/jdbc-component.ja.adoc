@@ -118,10 +118,10 @@ Spring Boot を利用する場合は, 自動設定を有効にするために, �
 
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
-| Name | Description | Default | Type
-| *camel.component.jdbc.data-source* | To use the DataSource instance instead of looking up the data source by name from the registry. The option is a javax.sql.DataSource type. |  | String
-| *camel.component.jdbc.enabled* | Enable jdbc component | true | Boolean
-| *camel.component.jdbc.resolve-property-placeholders* | Whether the component should resolve property placeholders on itself when starting. Only properties which are of String type can use property placeholders. | true | Boolean
+| 名前 | 説明 | デフォルト値 | 型
+| *camel.component.jdbc.data-source* | レジストリから名前でデータソースを検索する代わりに使用するデータソースのインスタンス.オプションは javax.sql.DataSource 型である. |  | String
+| *camel.component.jdbc.enabled* | jdbc コンポーネントを有効化する | true | Boolean
+| *camel.component.jdbc.resolve-property-placeholders* | 起動時にコンポーネントが, プロパティプレースホルダを解決するか否かを決定する. String 型であるプロパティのみがプロパティプレースホルダを使用できる. | true | Boolean
 |===
 // spring-boot-auto-configure options: END
 
@@ -137,24 +137,19 @@ Spring Boot を利用する場合は, 自動設定を有効にするために, �
 
 [width="100%",cols="10%,90%",options="header",]
 |===
-|Header |Description
+|ヘッダ |説明
 
-|`CamelJdbcRowCount` |If the query is a `SELECT`, query the row count is returned in this OUT
-header.
+|`CamelJdbcRowCount` |クエリが `SELECT` だった場合に, OUT ヘッダのこの値に取得した行数が返却されるようにする.
 
-|`CamelJdbcUpdateCount` |If the query is an `UPDATE`, query the update count is returned in this
-OUT header.
+|`CamelJdbcUpdateCount` |クエリが `UPDATE` だった場合に, OUT ヘッダこの値に更新した行数が返却されるようにする.
 
-|`CamelGeneratedKeysRows` |*Camel 2.10:* Rows that contains the generated kets.
+|`CamelGeneratedKeysRows` |*Camel 2.10:* 生成されたキーを含む行.
 
-|`CamelGeneratedKeysRowCount` |*Camel 2.10:* The number of rows in the header that contains generated
-keys.
+|`CamelGeneratedKeysRowCount` |*Camel 2.10:* 生成されたキーを含む行数.
 
-|`CamelJdbcColumnNames` |*Camel 2.11.1:* The column names from the ResultSet as a `java.util.Set`
-type.
+|`CamelJdbcColumnNames` |*Camel 2.11.1:* `java.util.Set` 型で ResultSet 内にあるカラム名.
 
-|`CamelJdbcParametes` |*Camel 2.12:* A `java.util.Map` which has the headers to be used if
-`useHeadersAsParameters` has been enabled.
+|`CamelJdbcParametes` |*Camel 2.12:* `useHeadersAsParameters` が有効だった場合に, 使用されているヘッダの `java.util.Map`.
 |===
 
 === キーの生成
@@ -222,10 +217,9 @@ from("direct:hello")
 
 === サンプル - 毎分データベースをポーリングする
 
-If we want to poll a database using the JDBC component, we need to
-combine it with a polling scheduler such as the <<timer-component,Timer>>
-or <<quartz-component,Quartz>> etc. In the following example, we retrieve
-data from the database every 60 seconds:
+JDBC コンポーネントを使用してデータベースをポーリングしたい場合は, 
+JDBC コンポーネントと <<timer-component,Timer>> や <<quartz-component,Quartz>> などのポーリングスケジューラと連結する必要がある.
+以下の例では, 60 秒毎にデータベースからデータを取得している:
 
 [source,java]
 ----
@@ -235,12 +229,10 @@ from("timer://foo?period=60000")
   .to("activemq:queue:customers");
 ----
 
-=== Sample - Move Data Between Data Sources
+=== サンプル - データソース間でのデータ移動
 
-A common use case is to query for data, process it and move it to
-another data source (ETL operations). In the following example, we
-retrieve new customer records from the source table every hour,
-filter/transform them and move them to a destination table:
+データのクエリでよくあるユースケースは, データ処理を行って別のデータソースに移すことである (ETL 操作).
+以下の例では, 新規顧客のレコードを 1 時間ごとに取得元テーブルから取得して, フィルタと変換を行い転送先テーブルに移している:
 
 [source,java]
 ----
