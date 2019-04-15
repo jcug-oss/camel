@@ -84,15 +84,15 @@ jdbc:dataSourceName
 | *outputClass* (producer) | outputType に SelectOne もしくは SelectList を指定した場合に, 変換のために完全なパッケージとクラス名を指定する. |  | String
 | *outputType* (producer) | プロデューサが使用する出力を決定する. | SelectList | JdbcOutputType
 | *parameters* (producer) | java.sql.Statement に対するオプションパラメータ. 例えば, maxRows, fetchSize など. |  | Map
-| *readSize* (producer) | The default maximum number of rows that can be read by a polling query. The default value is 0. |  | int
-| *resetAutoCommit* (producer) | Camel will set the autoCommit on the JDBC connection to be false, commit the change after executed the statement and reset the autoCommit flag of the connection at the end, if the resetAutoCommit is true. If the JDBC connection doesn't support to reset the autoCommit flag, you can set the resetAutoCommit flag to be false, and Camel will not try to reset the autoCommit flag. When used with XA transactions you most likely need to set it to false so that the transaction manager is in charge of committing this tx. | true | boolean
-| *transacted* (producer) | Whether transactions are in use. | false | boolean
-| *useGetBytesForBlob* (producer) | To read BLOB columns as bytes instead of string data. This may be needed for certain databases such as Oracle where you must read BLOB columns as bytes. | false | boolean
-| *useHeadersAsParameters* (producer) | Set this option to true to use the prepareStatementStrategy with named parameters. This allows to define queries with named placeholders, and use headers with the dynamic values for the query placeholders. | false | boolean
+| *readSize* (producer) | ポーリングクエリにより読み込まれた行数のデフォルトの最大値. デフォルト値は 0. |  | int
+| *resetAutoCommit* (producer) | Camel は JDBC 接続に対して autoCommit を false に設定する. resetAutoCommit が true の場合は, SQL 文の実行後に変更をコミットして接続の最後で autoCommit をリセットする. JDBC 接続が autoCommit フラグのリセットをサポートしていない場合は, resetAutoCommit フラグを false に設定できる. この場合, Camel は autoCommit フラグをリセットしない. XA トランザクションとともに使用される場合は, トランザクションマネージャがトランザクションをコミットする責務を負うために false に設定することが多くなる. | true | boolean
+| *transacted* (producer) | トランザクションが使用されているか否か. | false | boolean
+| *useGetBytesForBlob* (producer) | BLOB カラムを文字列データではなくバイトとして読みこむ. これはバイトとして BLOB 列を読み込まなければいけない Oracle のような特定のデータベースで必要となる. | false | boolean
+| *useHeadersAsParameters* (producer) | true に設定すると, 名前付きパラメータとともに prepareStatementStrategy を使用する. これは名前付きプレースホルダを使用したクエリを定義でき, クエリのプレースホルダのためにヘッダに動的な値を設定できる. | false | boolean
 | *useJDBC4ColumnNameAnd LabelSemantics* (producer) | Sets whether to use JDBC 4 or JDBC 3.0 or older semantic when retrieving column name. JDBC 4.0 uses columnLabel to get the column name where as JDBC 3.0 uses both columnName or columnLabel. Unfortunately JDBC drivers behave differently so you can use this option to work out issues around your JDBC driver if you get problem using this component This option is default true. | true | boolean
 | *beanRowMapper* (advanced) | To use a custom org.apache.camel.component.jdbc.BeanRowMapper when using outputClass. The default implementation will lower case the row names and skip underscores, and dashes. For example CUST_ID is mapped as custId. |  | BeanRowMapper
-| *prepareStatementStrategy* (advanced) | Allows to plugin to use a custom org.apache.camel.component.jdbc.JdbcPrepareStatementStrategy to control preparation of the query and prepared statement. |  | JdbcPrepareStatement Strategy
-| *synchronous* (advanced) | Sets whether synchronous processing should be strictly used, or Camel is allowed to use asynchronous processing (if supported). | false | boolean
+| *prepareStatementStrategy* (advanced) | クエリ生成のためにカスタムの org.apache.camel.component.jdbc.JdbcPrepareStatementStrategy を使用するプラグインを許可する. |  | JdbcPrepareStatement Strategy
+| *synchronous* (advanced) | 同期処理が厳密に使用されるか否かを設定する. (もしサポートされている場合は) Camel は非同期処理を使用する. | false | boolean
 |===
 // endpoint options: END
 
