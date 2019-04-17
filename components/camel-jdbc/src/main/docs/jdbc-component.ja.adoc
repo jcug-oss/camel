@@ -139,9 +139,9 @@ Spring Boot を利用する場合は, 自動設定を有効にするために, �
 |===
 |ヘッダ |説明
 
-|`CamelJdbcRowCount` |クエリが `SELECT` だった場合に, OUT ヘッダのこの値に取得した行数が返却されるようにする.
+|`CamelJdbcRowCount` |クエリが `SELECT` だった場合に, OUT ヘッダのこの値に取得した行数が返却される.
 
-|`CamelJdbcUpdateCount` |クエリが `UPDATE` だった場合に, OUT ヘッダこの値に更新した行数が返却されるようにする.
+|`CamelJdbcUpdateCount` |クエリが `UPDATE` だった場合に, OUT ヘッダのこの値に更新した行数が返却される.
 
 |`CamelGeneratedKeysRows` |*Camel 2.10:* 生成されたキーを含む行.
 
@@ -159,11 +159,10 @@ Spring Boot を利用する場合は, 自動設定を有効にするために, �
 INSERT 文を使ってデータを挿入すると, RDBMS は自動生成されたキーをサポートする場合がある.
 <<jdbc-component,JDBC>> プロデューサに, 自動生成されたキーをヘッダに設定して返却するように指定することが可能である. +
 そのためには, ヘッダに `CamelRetrieveGeneratedKeys=true` を設定する.
-この設定により, 自動生成されたキーは上記の表のキーと共にヘッダに設定されて返却される。
+この設定により, 自動生成されたキーは上記の表のキーと共にヘッダに設定されて返却される.
 
 より詳細な情報は
-https://svn.apache.org/repos/asf/camel/trunk/components/camel-jdbc/src/test/java/org/apache/camel/component/jdbc/JdbcGeneratedKeysTest.java[unit
-test] を参照すること.
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-jdbc/src/test/java/org/apache/camel/component/jdbc/JdbcGeneratedKeysTest.java[unit test] を参照すること.
 
 自動生成キーを使用することは, 名前付きパラメータと同時には機能しない.
 
@@ -171,7 +170,7 @@ test] を参照すること.
 
 *Camel 2.12 から利用可能*
 
-以下のルートでは, プロジェクトテーブルから全てのプロジェクトを取得して使用としている.
+以下のルートでは, projects テーブルから全てのプロジェクトを取得している.
 SQL クエリが, :?lic と :?min. の 2 つのパラメータを持っていることに注意すること. +
 Camel はメッセージヘッダから, これらのパラメータを検索する. この例では, 名前付きパラメータのために
 2 つの定数の値を 2 つのヘッダに設定していることに注意すること:
@@ -189,7 +188,7 @@ Camel はメッセージヘッダから, これらのパラメータを検索す
 
 === サンプル
 
-以下の例では, カスタマー表から行を取得している.
+以下の例では, customer テーブルから行を取得している.
 
 まず, `testdb` として Camel にデータソースを登録する:
 
