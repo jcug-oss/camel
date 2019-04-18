@@ -86,7 +86,7 @@ jdbc:dataSourceName
 | *parameters* （プロデューサ） | java.sql.Statement に対するオプションパラメータ。例えば、maxRows、fetchSize などである。|  | Map
 | *readSize* （プロデューサ） | ポーリングクエリにより読み込まれた行数のデフォルトの最大値。デフォルト値は 0 である。|  | int
 | *resetAutoCommit* （プロデューサ） | Camel は JDBC 接続に対して autoCommit を false に設定する。resetAutoCommit が true の場合は、SQL 文の実行後に変更をコミットして接続の最後で autoCommit をリセットする。JDBC 接続が autoCommit フラグのリセットをサポートしていない場合は、resetAutoCommit フラグを false に設定できる。この場合、Camel は autoCommit フラグをリセットしない。XA トランザクションとともに使用される場合は、トランザクションマネージャがトランザクションをコミットする責務を負うために false に設定することが多くなる。| true | boolean
-| *transacted* （プロデューサ） | トランザクションが使用されているか否か。| false | boolean
+| *transacted* （プロデューサ） | トランザクションを使用するか否かを指定する。| false | boolean
 | *useGetBytesForBlob* （プロデューサ） | BLOB カラムを文字列データではなくバイトとして読みこむ。これはバイトとして BLOB 列を読み込まなければいけない Oracle のような特定のデータベースで必要となる。| false | boolean
 | *useHeadersAsParameters* （プロデューサ） | true に設定すると、名前付きパラメータとともに prepareStatementStrategy を使用する。これは名前付きプレースホルダを使用したクエリを定義でき、クエリのプレースホルダのためにヘッダに動的な値を設定できる。| false | boolean
 | *useJDBC4ColumnNameAnd LabelSemantics* （プロデューサ） | カラム名を取得する場合に、JDBC 4 または JDBC 3.0 以降のセマンティックを使用するように設定する。JDBC 3.0 では columnName もしくは columnLabel を使用するが、JDBC 4.0 はカラム名を取得するのに columnLabel を使用する。残念ながら、JDBC ドライバは異なる振る舞いをするため、本コンポーネントを使用して問題が発生し、JDBC ドライバの問題に取り組む際に、このオプションを使用できる。デフォルト値は true である。| true | boolean
