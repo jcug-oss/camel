@@ -16,7 +16,7 @@ Meven ユーザは `pom.xml` に、次の依存性を追加する必要がある
     <groupId>org.apache.camel</groupId>
     <artifactId>camel-jdbc</artifactId>
     <version>x.x.x</version>
-    <!-- use the same version as your Camel core version -->
+    <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
 </dependency>
 ----
 
@@ -64,7 +64,7 @@ jdbc:dataSourceName
 
 また、次のパスとクエリパラメータで設定される:
 
-==== パス パラメータ (1 個):
+==== パス パラメータ （1 個）:
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
@@ -74,7 +74,7 @@ jdbc:dataSourceName
 |===
 
 
-==== クエリ パラメータ (13 個):
+==== クエリ パラメータ （13 個）:
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
@@ -107,7 +107,7 @@ Spring Boot を利用する場合は、自動設定を有効にするために�
   <groupId>org.apache.camel</groupId>
   <artifactId>camel-jdbc-starter</artifactId>
   <version>x.x.x</version>
-  <!-- use the same version as your Camel core version -->
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
 </dependency>
 ----
 
@@ -205,10 +205,10 @@ ResultSet で行全体を扱うよりも、1 行ずつ扱いたい場合は、Sp
 [source,java]
 ----
 from("direct:hello")
-// here we split the data from the testdb into new messages one by one
-// so the mock endpoint will receive a message per row in the table
-// the StreamList option allows to stream the result of the query without creating a List of rows
-// and notice we also enable streaming mode on the splitter
+// ここでは testdb からのデータを 1 つずつ新規メッセージに分割している。
+// よって、もっくエンドポイントは、テーブル内の行ごとにメッセージを受け取る。
+// StreamList オプションは、行のリストを作成せずにクエリの結果をストリームする。
+// splitter でストリーミングモードを有効にしていることにも注意すること。
 .to("jdbc:testdb?outputType=StreamList")
   .split(body()).streaming()
   .to("mock:result");
@@ -239,7 +239,7 @@ from("timer://MoveNewCustomersEveryHour?period=3600000")
     .setBody(constant("select * from customer where create_time > (sysdate-1/24)"))
     .to("jdbc:testdb")
     .split(body())
-        .process(new MyCustomerProcessor()) //filter/transform results as needed
+        .process(new MyCustomerProcessor()) //必要であれば、結果をフィルタしたり変換したりすること
         .setBody(simple("insert into processed_customer values('${body[ID]}','${body[NAME]}')"))
         .to("jdbc:testdb");
 ----
