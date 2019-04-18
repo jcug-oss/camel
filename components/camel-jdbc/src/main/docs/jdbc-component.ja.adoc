@@ -143,13 +143,13 @@ Spring Boot を利用する場合は、自動設定を有効にするために�
 
 |`CamelJdbcUpdateCount` |クエリが `UPDATE` だった場合に、OUT ヘッダのこの値に更新した行数が返却される。
 
-|`CamelGeneratedKeysRows` |*Camel 2.10:* 生成されたキーを含む行。
+|`CamelGeneratedKeysRows` |*Camel 2.10:* 生成されたキーを含む行である。
 
-|`CamelGeneratedKeysRowCount` |*Camel 2.10:* 生成されたキーを含む行数。
+|`CamelGeneratedKeysRowCount` |*Camel 2.10:* 生成されたキーを含む行数である。
 
-|`CamelJdbcColumnNames` |*Camel 2.11.1:* `java.util.Set` 型で ResultSet 内にあるカラム名。
+|`CamelJdbcColumnNames` |*Camel 2.11.1:* `java.util.Set` 型で ResultSet 内にあるカラム名である。
 
-|`CamelJdbcParametes` |*Camel 2.12:* `useHeadersAsParameters` が有効だった場合に、使用されているヘッダの `java.util.Map`。
+|`CamelJdbcParametes` |*Camel 2.12:* `useHeadersAsParameters` が有効だった場合に、使用されているヘッダの `java.util.Map` である。
 |===
 
 === キーの生成
