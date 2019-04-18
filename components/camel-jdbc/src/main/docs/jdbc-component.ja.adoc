@@ -4,7 +4,7 @@
 *Camel version 1.2 から利用可能*
 
 *jdbc* コンポーネントは JDBC 経由でデータベースにアクセスでき、
-SQL のクエリ(SELECT)や操作(INSERT、UPDATE その他)は、メッセージボディで送信される。
+SQL のクエリ(SELECT)や操作（INSERT、UPDATE その他）は、メッセージボディで送信される。
 このコンポーネントは、標準 JDBC API を使用しており、
 spring-jdbc を使用している <<sql-component,SQL コンポーネント>> とは異なる。
 
