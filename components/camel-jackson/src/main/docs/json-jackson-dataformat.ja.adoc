@@ -17,7 +17,7 @@ from("activemq:My.Queue").
 
 
 // dataformat options: START
-JSon Jackson データフォーマットは、以下のように示した 19 のオプションをサポートする:
+JSon Jackson データフォーマットは、以下に示した 19 個のオプションをサポートする:
 
 
 
@@ -27,8 +27,8 @@ JSon Jackson データフォーマットは、以下のように示した 19 の
 | objectMapper |  | String | Jackson を使用する際に得られた既存の ObjectMapper の ID を検索して使用する。
 | useDefaultObjectMapper | true | Boolean | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するか否かを指定する。
 | prettyPrint | false | Boolean | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。
-| library | Jackson | JsonLibrary | Which json library to use.
-| unmarshalTypeName |  | String | Class name of the java type to use when unarmshalling
+| library | Jackson | JsonLibrary | どの JSON ライブラリを使用するかを指定する。
+| unmarshalTypeName |  | String | アンマーシャリングの場合に使用する Java の型名称を指定する。
 | jsonView |  | Class | When marshalling a POJO to JSON you might want to exclude certain fields from the JSON output. With Jackson you can use JSON views to accomplish this. This option is to refer to the class which has JsonView annotations
 | include |  | String | If you want to marshal a pojo to JSON, and the pojo has some fields with null values. And you want to skip these null values, you can set this option to NON_NULL
 | allowJmsType | false | Boolean | Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to.
@@ -46,9 +46,9 @@ JSon Jackson データフォーマットは、以下のように示した 19 の
 |===
 // dataformat options: END
 // spring-boot-auto-configure options: START
-=== Spring Boot Auto-Configuration
+=== Spring Boot の Auto-Configuration
 
-When using Spring Boot make sure to use the following Maven dependency to have support for auto configuration:
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
 
 [source,xml]
 ----
@@ -56,18 +56,18 @@ When using Spring Boot make sure to use the following Maven dependency to have s
   <groupId>org.apache.camel</groupId>
   <artifactId>camel-jackson-starter</artifactId>
   <version>x.x.x</version>
-  <!-- use the same version as your Camel core version -->
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
 </dependency>
 ----
 
 
-The component supports 20 options, which are listed below.
+コンポーネントは、、以下に示した 20 個のオプションをサポートする。
 
 
 
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
-| Name | Description | Default | Type
+| 名前 | 説明 | デフォルト値 | 型
 | *camel.dataformat.json-jackson.allow-jms-type* | Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to. | false | Boolean
 | *camel.dataformat.json-jackson.allow-unmarshall-type* | If enabled then Jackson is allowed to attempt to use the CamelJacksonUnmarshalType header during the unmarshalling. This should only be enabled when desired to be used. | false | Boolean
 | *camel.dataformat.json-jackson.collection-type-name* | Refers to a custom collection type to lookup in the registry to use. This option should rarely be used, but allows to use different collection types than java.util.Collection based as default. |  | String
@@ -94,7 +94,6 @@ The component supports 20 options, which are listed below.
 === カスタム ObjectMapper の使用
 
 マッピングの設定をより詳しく行う場合は、`JacksonDataFormat` を設定して、カスタム `ObjectMapper` を使用できる。
-You can configure `JacksonDataFormat` to use a custom `ObjectMapper` in case you need more control of the mapping configuration.
 
 レジストリ内に 1 つの `ObjectMapper` を設定した場合は、Camel は自動的に、この `ObjectMapper` を検索して使用する。
 例えば、Spring Boot を使用し Spring MVC を有効にしている場合は、Spring Boot はデフォルトの `ObjectMapper` を提供している。
