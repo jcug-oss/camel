@@ -29,11 +29,11 @@ JSon Jackson データフォーマットは、以下に示した 19 個のオプ
 | prettyPrint | false | Boolean | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。
 | library | Jackson | JsonLibrary | どの JSON ライブラリを使用するかを指定する。
 | unmarshalTypeName |  | String | アンマーシャリングの場合に使用する Java の型名称を指定する。
-| jsonView |  | Class | When marshalling a POJO to JSON you might want to exclude certain fields from the JSON output. With Jackson you can use JSON views to accomplish this. This option is to refer to the class which has JsonView annotations
-| include |  | String | If you want to marshal a pojo to JSON, and the pojo has some fields with null values. And you want to skip these null values, you can set this option to NON_NULL
+| jsonView |  | Class | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューを使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。
+| include |  | String | いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、このオプションを NON_NULL に設定する。
 | allowJmsType | false | Boolean | Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to.
 | collectionTypeName |  | String | Refers to a custom collection type to lookup in the registry to use. This option should rarely be used, but allows to use different collection types than java.util.Collection based as default.
-| useList | false | Boolean | To unarmshal to a List of Map or a List of Pojo.
+| useList | false | Boolean | マップのリストまたは POJO のリストにアンマーシャルするかを指定する。
 | enableJaxbAnnotationModule | false | Boolean | Whether to enable the JAXB annotations module when using jackson. When enabled then JAXB annotations can be used by Jackson.
 | moduleClassNames |  | String | To use custom Jackson modules com.fasterxml.jackson.databind.Module specified as a String with FQN class names. Multiple classes can be separated by comma.
 | moduleRefs |  | String | To use custom Jackson modules referred from the Camel registry. Multiple modules can be separated by comma.
@@ -87,7 +87,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 | *camel.dataformat.json-jackson.permissions* | Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions. |  | String
 | *camel.dataformat.json-jackson.pretty-print* | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。 | false | Boolean
 | *camel.dataformat.json-jackson.timezone* | マーシャリングもしくはアンマーシャリングのときに、Jackson が使用する Timezone を指定する。このオプションは、gson、fastjson、や xstream といった他の Json データフォーマットには影響は及ぼさない。 |  | String
-| *camel.dataformat.json-jackson.unmarshal-type-name* | アンマーシャルの場合に使用する Java の型名称を指定する。 |  | String
+| *camel.dataformat.json-jackson.unmarshal-type-name* | アンマーシャリングの場合に使用する Java の型名称を指定する。 |  | String
 | *camel.dataformat.json-jackson.use-default-object-mapper* | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するかを指定する。 | true | Boolean
 | *camel.dataformat.json-jackson.use-list* | マップのリストまたは POJO のリストにアンマーシャルするかを指定する。 | false | Boolean
 |===
