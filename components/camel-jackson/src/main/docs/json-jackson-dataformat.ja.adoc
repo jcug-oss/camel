@@ -39,7 +39,9 @@ JSon Jackson データフォーマットは、以下に示した 19 個のオプ
 | moduleRefs |  | String | To use custom Jackson modules referred from the Camel registry. Multiple modules can be separated by comma.
 | enableFeatures |  | String | Set of features to enable on the Jackson com.fasterxml.jackson.databind.ObjectMapper. The features should be a name that matches a enum from com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.DeserializationFeature, or com.fasterxml.jackson.databind.MapperFeature Multiple features can be separated by comma
 | disableFeatures |  | String | Set of features to disable on the Jackson com.fasterxml.jackson.databind.ObjectMapper. The features should be a name that matches a enum from com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.DeserializationFeature, or com.fasterxml.jackson.databind.MapperFeature Multiple features can be separated by comma
-| permissions |  | String | Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions.
+| permissions |  | String | xml もしくは json から Java Bean にアンマーシャルする際に、XStream が 使用することを許可された Java パッケージとクラスのうち、どれが制御するのかのパーミッションを追加する。
+
+Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions.
 | allowUnmarshallType | false | Boolean | If enabled then Jackson is allowed to attempt to use the CamelJacksonUnmarshalType header during the unmarshalling. This should only be enabled when desired to be used.
 | timezone |  | String | If set then Jackson will use the Timezone when marshalling/unmarshalling. This option will have no effect on the others Json DataFormat, like gson, fastjson and xstream.
 | contentTypeHeader | false | Boolean | Whether the data format should set the Content-Type header with the type from the data format if the data format is capable of doing so. For example application/xml for data formats marshalling to XML, or application/json for data formats marshalling to JSon etc.
@@ -78,7 +80,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 | *camel.dataformat.json-jackson.enabled* | Enable json-jackson dataformat | true | Boolean
 | *camel.dataformat.json-jackson.include* | If you want to marshal a pojo to JSON, and the pojo has some fields with null values. And you want to skip these null values, you can set this option to NON_NULL |  | String
 | *camel.dataformat.json-jackson.json-view* | When marshalling a POJO to JSON you might want to exclude certain fields from the JSON output. With Jackson you can use JSON views to accomplish this. This option is to refer to the class which has JsonView annotations |  | Class
-| *camel.dataformat.json-jackson.library* | Which json library to use. |  | JsonLibrary
+| *camel.dataformat.json-jackson.library* | どの JSON ライブラリを使用するかを指定する。 |  | JsonLibrary
 | *camel.dataformat.json-jackson.module-class-names* | To use custom Jackson modules com.fasterxml.jackson.databind.Module specified as a String with FQN class names. Multiple classes can be separated by comma. |  | String
 | *camel.dataformat.json-jackson.module-refs* | To use custom Jackson modules referred from the Camel registry. Multiple modules can be separated by comma. |  | String
 | *camel.dataformat.json-jackson.object-mapper* | Lookup and use the existing ObjectMapper with the given id when using Jackson. |  | String
@@ -87,7 +89,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 | *camel.dataformat.json-jackson.timezone* | If set then Jackson will use the Timezone when marshalling/unmarshalling. This option will have no effect on the others Json DataFormat, like gson, fastjson and xstream. |  | String
 | *camel.dataformat.json-jackson.unmarshal-type-name* | Class name of the java type to use when unarmshalling |  | String
 | *camel.dataformat.json-jackson.use-default-object-mapper* | Whether to lookup and use default Jackson ObjectMapper from the registry. | true | Boolean
-| *camel.dataformat.json-jackson.use-list* | To unarmshal to a List of Map or a List of Pojo. | false | Boolean
+| *camel.dataformat.json-jackson.use-list* | マップのリストまたは POJO のリストにアンマーシャルするかを指定する。 | false | Boolean
 |===
 // spring-boot-auto-configure options: END
 
