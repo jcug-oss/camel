@@ -26,7 +26,7 @@ JSon Jackson データフォーマットは、以下のように示した 19 の
 | 名前 | デフォルト値 | Java の型 | 説明
 | objectMapper |  | String | Jackson を使用する際に得られた既存の ObjectMapper の ID を検索して使用する。
 | useDefaultObjectMapper | true | Boolean | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するか否かを指定する。
-| prettyPrint | false | Boolean | To enable pretty printing output nicely formatted. Is by default false.
+| prettyPrint | false | Boolean | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。
 | library | Jackson | JsonLibrary | Which json library to use.
 | unmarshalTypeName |  | String | Class name of the java type to use when unarmshalling
 | jsonView |  | Class | When marshalling a POJO to JSON you might want to exclude certain fields from the JSON output. With Jackson you can use JSON views to accomplish this. This option is to refer to the class which has JsonView annotations
@@ -91,23 +91,25 @@ The component supports 20 options, which are listed below.
 |===
 // spring-boot-auto-configure options: END
 
-=== Using custom ObjectMapper
+=== カスタム ObjectMapper の使用
 
+マッピングの設定をより詳しく行う場合は、`JacksonDataFormat` を設定して、カスタム `ObjectMapper` を使用できる。
 You can configure `JacksonDataFormat` to use a custom `ObjectMapper` in case you need more control of the mapping configuration.
 
-If you setup a single `ObjectMapper` in the registry, then Camel will automatic lookup and use this `ObjectMapper`.
-For example if you use Spring Boot, then Spring Boot can provide a default `ObjectMapper` for you if you have Spring MVC enabled.
-And this would allow Camel to detect that there is one bean of `ObjectMapper` class type in the Spring Boot bean registry
-and then use it. When this happens you should set a `INFO` logging from Camel.
+レジストリ内に 1 つの `ObjectMapper` を設定した場合は、Camel は自動的に、この `ObjectMapper` を検索して使用する。
+例えば、Spring Boot を使用し Spring MVC を有効にしている場合は、Spring Boot はデフォルトの `ObjectMapper` を提供している。
+この場合は、Spring Boot Bean レジストリ内で `ObjectMapper` クラスの 1 つの Bean を Camel が検知して使用できることになる。
+Camel のログレベルを `INFO` に設定すると、上記が発生した場合にログ出力される。
 
-=== Dependencies
 
-To use Jackson in your camel routes you need to add the dependency
-on *camel-jackson* which implements this data format.
+=== 依存性
 
-If you use maven you could just add the following to your pom.xml,
-substituting the version number for the latest & greatest release (see
-the download page for the latest versions).
+Camel のルートで Jackson を使用するためには、データフォーマットを実装した *camel-jackson* 依存性を追加する必要がある。
+
+Maven を使用している場合は、pom.xml に次の依存性を追加する。
+バージョン番号は最新で一番最近のリリースに置き換えること
+（最新バージョンについてはダウンロードページを参照すること）。
+
 
 [source,xml]
 ----------------------------------------------------------
@@ -115,6 +117,6 @@ the download page for the latest versions).
   <groupId>org.apache.camel</groupId>
   <artifactId>camel-jackson</artifactId>
   <version>x.x.x</version>
-  <!-- use the same version as your Camel core version -->
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
 </dependency>
 ----------------------------------------------------------
