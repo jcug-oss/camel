@@ -79,7 +79,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 | *camel.dataformat.json-jackson.enable-jaxb-annotation-module* | Whether to enable the JAXB annotations module when using jackson. When enabled then JAXB annotations can be used by Jackson. | false | Boolean
 | *camel.dataformat.json-jackson.enabled* | Enable json-jackson dataformat | true | Boolean
 | *camel.dataformat.json-jackson.include* | If you want to marshal a pojo to JSON, and the pojo has some fields with null values. And you want to skip these null values, you can set this option to NON_NULL |  | String
-| *camel.dataformat.json-jackson.json-view* | When marshalling a POJO to JSON you might want to exclude certain fields from the JSON output. With Jackson you can use JSON views to accomplish this. This option is to refer to the class which has JsonView annotations |  | Class
+| *camel.dataformat.json-jackson.json-view* | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューを使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。 |  | Class
 | *camel.dataformat.json-jackson.library* | どの JSON ライブラリを使用するかを指定する。 |  | JsonLibrary
 | *camel.dataformat.json-jackson.module-class-names* | To use custom Jackson modules com.fasterxml.jackson.databind.Module specified as a String with FQN class names. Multiple classes can be separated by comma. |  | String
 | *camel.dataformat.json-jackson.module-refs* | To use custom Jackson modules referred from the Camel registry. Multiple modules can be separated by comma. |  | String
