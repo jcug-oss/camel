@@ -1,10 +1,9 @@
 [[json-jackson-dataformat]]
 == JSon Jackson DataFormat
 
-*Available as of Camel version 2.0*
+*Camel version 2.0 から利用可能*
 
-Jackson is a Data Format which uses the
-https://github.com/FasterXML/jackson-core[Jackson Library]
+Jackson は https://github.com/FasterXML/jackson-core[Jackson Library] を使用したデータフォーマットである。
 
 [source,java]
 -------------------------------
@@ -13,20 +12,20 @@ from("activemq:My.Queue").
   to("mqseries:Another.Queue");
 -------------------------------
 
-=== Jackson Options
+=== Jackson オプション
 
 
 
 // dataformat options: START
-The JSon Jackson dataformat supports 19 options, which are listed below.
+JSon Jackson データフォーマットは、以下のように示した 19 のオプションをサポートする:
 
 
 
 [width="100%",cols="2s,1m,1m,6",options="header"]
 |===
-| Name | Default | Java Type | Description
-| objectMapper |  | String | Lookup and use the existing ObjectMapper with the given id when using Jackson.
-| useDefaultObjectMapper | true | Boolean | Whether to lookup and use default Jackson ObjectMapper from the registry.
+| 名前 | デフォルト値 | Java の型 | 説明
+| objectMapper |  | String | Jackson を使用する際に得られた既存の ObjectMapper の ID を検索して使用する。
+| useDefaultObjectMapper | true | Boolean | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するか否かを指定する。
 | prettyPrint | false | Boolean | To enable pretty printing output nicely formatted. Is by default false.
 | library | Jackson | JsonLibrary | Which json library to use.
 | unmarshalTypeName |  | String | Class name of the java type to use when unarmshalling
