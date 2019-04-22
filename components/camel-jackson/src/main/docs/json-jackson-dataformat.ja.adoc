@@ -37,8 +37,8 @@ JSon Jackson データフォーマットは、以下に示した 19 個のオプ
 | enableJaxbAnnotationModule | false | Boolean | Whether to enable the JAXB annotations module when using jackson. When enabled then JAXB annotations can be used by Jackson.
 | moduleClassNames |  | String | To use custom Jackson modules com.fasterxml.jackson.databind.Module specified as a String with FQN class names. Multiple classes can be separated by comma.
 | moduleRefs |  | String | To use custom Jackson modules referred from the Camel registry. Multiple modules can be separated by comma.
-| enableFeatures |  | String | Set of features to enable on the Jackson com.fasterxml.jackson.databind.ObjectMapper. The features should be a name that matches a enum from com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.DeserializationFeature, or com.fasterxml.jackson.databind.MapperFeature Multiple features can be separated by comma
-| disableFeatures |  | String | Set of features to disable on the Jackson com.fasterxml.jackson.databind.ObjectMapper. The features should be a name that matches a enum from com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.DeserializationFeature, or com.fasterxml.jackson.databind.MapperFeature Multiple features can be separated by comma
+| enableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で有効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 
+| disableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で無効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 
 | permissions |  | String | xml もしくは json から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
 パーミッションは、このパラメータか JVM のシステムプロパティでグローバルに設定されるかどちらかでなければいけない。パーミッションは、プラス記号の書き方で許可が指定でき、マイナス記号で拒否を設定できる。ドット記号をプレフィックスとして使用することによりワイルドカードがサポートされている。たとえば、com.foo とそのサブパッケージを許可する場合に、com.foo.. を指定する。複数のパーミッションを指定する場合は、com.foo.,-com.foo.bar.MySecretBean のようにカンマで区切って設定する。JVM システムプロパティで org.apache.camel.xstream.permissions のキーで指定された値で上書きされない限り、デフォルトのパーミッション -,java.lang.,java.util が常に含まれる。
 
@@ -100,7 +100,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 
 レジストリ内に 1 つの `ObjectMapper` を設定した場合は、Camel は自動的に、この `ObjectMapper` を検索して使用する。
 例えば、Spring Boot を使用し Spring MVC を有効にしている場合は、Spring Boot はデフォルトの `ObjectMapper` を提供している。
-この場合は、Spring Boot Bean レジストリ内で `ObjectMapper` クラスの 1 つの Bean を Camel が検知して使用できることになる。
+この場合は、Spring Boot Bean レジストリ内で `ObjectMapper` クラスの 1 つの Bean を Camel が検出して使用できることになる。
 Camel のログレベルを `INFO` に設定すると、上記が発生した場合にログ出力される。
 
 
