@@ -1,5 +1,5 @@
 [[json-jackson-dataformat]]
-== JSon Jackson DataFormat
+== JSon Jackson データフォーマット
 
 *Camel version 2.0 から利用可能*
 
