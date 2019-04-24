@@ -17,7 +17,7 @@ from("activemq:My.Queue").
 
 
 // dataformat options: START
-JSon Jackson データフォーマットは、以下に示した 19 個のオプションをサポートする:
+JSON Jackson データフォーマットは、以下に示した 19 個のオプションをサポートする:
 
 
 
@@ -26,12 +26,12 @@ JSon Jackson データフォーマットは、以下に示した 19 個のオプ
 | 名前 | デフォルト値 | Java の型 | 説明
 | objectMapper |  | String | Jackson を使用する際に与えられた既存の ObjectMapper の ID を検索して使用する。
 | useDefaultObjectMapper | true | Boolean | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するか否かを指定する。
-| prettyPrint | false | Boolean | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。
+| prettyPrint | false | Boolean | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。
 | library | Jackson | JsonLibrary | どの JSON ライブラリを使用するかを指定する。
-| unmarshalTypeName |  | String | アンマーシャリングの場合に使用する Java の型名称を指定する。
-| jsonView |  | Class | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューを使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。
+| unmarshalTypeName |  | String | アンマーシャリングする場合に使用する Java の型名称を指定する。
+| jsonView |  | Class | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューが使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。
 | include |  | String | いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、このオプションを NON_NULL に設定する。
-| allowJmsType | false | Boolean | アンマーシャリングする場合に、JMS ユーザが、JMS 仕様の JMSType ヘッダで FQN クラス名を指定できるようにするために使用される。 
+| allowJmsType | false | Boolean | JMS ユーザが、JMS 仕様の JMSType ヘッダでアンマーシャリングする FQN クラス名を指定できるようにするために使用される。 
 Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to.
 | collectionTypeName |  | String | レジストリ内を検索するために使用するカスタムのコレクションタイプを参照する。このオプションはほとんど使用されないが、デフォルトの java.util.Collection とは異なるコレクションタイプを使用できる。
 | useList | false | Boolean | マップのリストまたは POJO のリストにアンマーシャリングするかを指定する。
@@ -40,7 +40,7 @@ Used for JMS users to allow the JMSType header from the JMS spec to specify a FQ
 | moduleRefs |  | String | Camel レジストリから参照される、カスタムの Jackson モジュールを指定する。複数のモジュールを指定する場合は、カンマで区切ること。
 | enableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で有効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 
 | disableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で無効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 
-| permissions |  | String | xml もしくは json から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
+| permissions |  | String | XML もしくは JSON から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
 パーミッションは、このパラメータか JVM のシステムプロパティでグローバルに設定されるかどちらかでなければいけない。パーミッションは、プラス記号の書き方で許可が指定でき、マイナス記号で拒否を設定できる。ドット記号をプレフィックスとして使用することによりワイルドカードがサポートされている。たとえば、com.foo とそのサブパッケージを許可する場合に、com.foo.. を指定する。複数のパーミッションを指定する場合は、com.foo.,-com.foo.bar.MySecretBean のようにカンマで区切って設定する。JVM システムプロパティで org.apache.camel.xstream.permissions のキーで指定された値で上書きされない限り、デフォルトのパーミッション -,java.lang.,java.util が常に含まれる。
 Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions.
 | allowUnmarshallType | false | Boolean | 有効にされた場合は、Jackson はアンマーシャリング時に CamelJacksonUnmarshalType ヘッダを使用することを許可される。使用したい場合のみ有効にすること。
@@ -73,8 +73,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 [width="100%",cols="2,5,^1,2",options="header"]
 |===
 | 名前 | 説明 | デフォルト値 | 型
-| *camel.dataformat.json-jackson.allow-jms-type* | アンマーシャリングする場合に、JMS ユーザが、JMS 仕様の JMSType ヘッダで FQN クラス名を指定できるようにするために使用される。
-Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to. | false | Boolean
+| *camel.dataformat.json-jackson.allow-jms-type* | JMS ユーザが、JMS 仕様の JMSType ヘッダでアンマーシャリングする FQN クラス名を指定できるようにするために使用される。 | false | Boolean
 | *camel.dataformat.json-jackson.allow-unmarshall-type* | 有効にされた場合は、Jackson はアンマーシャリング時に CamelJacksonUnmarshalType ヘッダを使用することを許可される。使用したい場合のみ有効にすること。 | false | Boolean
 | *camel.dataformat.json-jackson.collection-type-name* | レジストリ内を検索するために使用するカスタムのコレクションタイプを参照する。このオプションはほとんど使用されないが、デフォルトの java.util.Collection とは異なるコレクションタイプを使用できる。 |  | String
 | *camel.dataformat.json-jackson.content-type-header* | データフォーマットが、Content-Type ヘッダを設定できる場合に、Content-Type ヘッダを設定するか否かを指定する。たとえば XML へのマーシャリング時に application/xml を設定したり、JSON へのマーシャリング時に application/json を設定する。 | false | Boolean
@@ -88,10 +87,10 @@ Used for JMS users to allow the JMSType header from the JMS spec to specify a FQ
 | *camel.dataformat.json-jackson.module-class-names* | カスタムの Jackson モジュールである com.fasterxml.jackson.databind.Module を使用するために FQN クラス名とともに文字列で指定する。複数のクラスを指定する場合は、カンマで区切ること。 |  | String
 | *camel.dataformat.json-jackson.module-refs* | Camel レジストリから参照される、カスタムの Jackson モジュールを指定する。複数のモジュールを指定する場合は、カンマで区切ること。 |  | String
 | *camel.dataformat.json-jackson.object-mapper* | Jackson を使用する際に与えられた既存の ObjectMapper の ID を検索して使用する。 |  | String
-| *camel.dataformat.json-jackson.permissions* | xml もしくは json から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
+| *camel.dataformat.json-jackson.permissions* | XML もしくは JSON から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
 パーミッションは、このパラメータか JVM のシステムプロパティでグローバルに設定されるかどちらかでなければいけない。パーミッションは、プラス記号の書き方で許可が指定でき、マイナス記号で拒否を設定できる。ドット記号をプレフィックスとして使用することによりワイルドカードがサポートされている。たとえば、com.foo とそのサブパッケージを許可する場合に、com.foo.. を指定する。複数のパーミッションを指定する場合は、com.foo.,-com.foo.bar.MySecretBean のようにカンマで区切って設定する。JVM システムプロパティで org.apache.camel.xstream.permissions のキーで指定された値で上書きされない限り、デフォルトのパーミッション -,java.lang.,java.util が常に含まれる。
  Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions. |  | String
-| *camel.dataformat.json-jackson.pretty-print* | 読みやすく整列された出力にするか否かを指定する。デフォルトでは false である。 | false | Boolean
+| *camel.dataformat.json-jackson.pretty-print* | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。 | false | Boolean
 | *camel.dataformat.json-jackson.timezone* | マーシャリングもしくはアンマーシャリングのときに、Jackson が使用する Timezone を指定する。このオプションは、gson、fastjson、や xstream といった他の Json データフォーマットには影響は及ぼさない。 |  | String
 | *camel.dataformat.json-jackson.unmarshal-type-name* | アンマーシャリングの場合に使用する Java の型名称を指定する。 |  | String
 | *camel.dataformat.json-jackson.use-default-object-mapper* | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するかを指定する。 | true | Boolean
