@@ -100,7 +100,7 @@ Spring Boot を使用する場合は、自動設定を有効にするために�
 
 マッピングの設定をより詳しく行う場合は、`JacksonDataFormat` を設定して、カスタム `ObjectMapper` を使用できる。
 
-レジストリ内に 1 つの `ObjectMapper` を設定した場合は、Camel は自動的に、この `ObjectMapper` を検索して使用する。
+レジストリ内に 1 つの `ObjectMapper` を設定した場合に Camel は自動的に、この `ObjectMapper` を検索して使用する。
 例えば、Spring Boot を使用し Spring MVC を有効にしている場合は、Spring Boot はデフォルトの `ObjectMapper` を提供している。
 この場合は、Spring Boot Bean レジストリ内で `ObjectMapper` クラスの 1 つの Bean を Camel が検出して使用できることになる。
 Camel のログレベルを `INFO` に設定すると、上記が発生した場合にログ出力される。
