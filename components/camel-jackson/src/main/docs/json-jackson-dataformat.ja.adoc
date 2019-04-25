@@ -23,7 +23,7 @@ JSON Jackson データフォーマットは、以下に示した 19 個のオプ
 
 [width="100%",cols="2s,1m,1m,6",options="header"]
 |===
-| 名前 | デフォルト値 | Java の型 | 説明
+| 名前 | デフォルト値 | 型 | 説明
 | objectMapper |  | String | Jackson を使用する際に与えられた既存の ObjectMapper の ID を検索して使用する。
 | useDefaultObjectMapper | true | Boolean | レジストリからデフォルトの Jackson ObjectMapper を検索して使用するか否かを指定する。
 | prettyPrint | false | Boolean | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。
