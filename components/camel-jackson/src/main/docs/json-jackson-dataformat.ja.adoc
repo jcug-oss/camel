@@ -32,7 +32,6 @@ JSON Jackson データフォーマットは、以下に示した 19 個のオプ
 | jsonView |  | Class | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューが使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。
 | include |  | String | いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、このオプションを NON_NULL に設定する。
 | allowJmsType | false | Boolean | JMS ユーザが、JMS 仕様の JMSType ヘッダでアンマーシャリングする FQN クラス名を指定できるようにするために使用される。 
-Used for JMS users to allow the JMSType header from the JMS spec to specify a FQN classname to use to unmarshal to.
 | collectionTypeName |  | String | レジストリ内を検索するために使用するカスタムのコレクションタイプを参照する。このオプションはほとんど使用されないが、デフォルトの java.util.Collection とは異なるコレクションタイプを使用できる。
 | useList | false | Boolean | マップのリストまたは POJO のリストにアンマーシャリングするかを指定する。
 | enableJaxbAnnotationModule | false | Boolean | Jackson を使用している場合に、JAXB アノテーションモジュールを有効にするか否かを指定する。有効な場合に JAXB アノテーションは Jackson で使用される。
@@ -42,7 +41,6 @@ Used for JMS users to allow the JMSType header from the JMS spec to specify a FQ
 | disableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で無効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 
 | permissions |  | String | XML もしくは JSON から Java Bean にアンマーシャリングする際に、XStream が 使用することを許可された Java パッケージとクラスで、どれが制御するのかのパーミッションを追加する。
 パーミッションは、このパラメータか JVM のシステムプロパティでグローバルに設定されるかどちらかでなければいけない。パーミッションは、プラス記号の書き方で許可が指定でき、マイナス記号で拒否を設定できる。ドット記号をプレフィックスとして使用することによりワイルドカードがサポートされている。たとえば、com.foo とそのサブパッケージを許可する場合に、com.foo.. を指定する。複数のパーミッションを指定する場合は、com.foo.,-com.foo.bar.MySecretBean のようにカンマで区切って設定する。JVM システムプロパティで org.apache.camel.xstream.permissions のキーで指定された値で上書きされない限り、デフォルトのパーミッション -,java.lang.,java.util が常に含まれる。
-Adds permissions that controls which Java packages and classes XStream is allowed to use during unmarshal from xml/json to Java beans. A permission must be configured either here or globally using a JVM system property. The permission can be specified in a syntax where a plus sign is allow, and minus sign is deny. Wildcards is supported by using . as prefix. For example to allow com.foo and all subpackages then specfy com.foo.. Multiple permissions can be configured separated by comma, such as com.foo.,-com.foo.bar.MySecretBean. The following default permission is always included: -,java.lang.,java.util. unless its overridden by specifying a JVM system property with they key org.apache.camel.xstream.permissions.
 | allowUnmarshallType | false | Boolean | 有効にされた場合は、Jackson はアンマーシャリング時に CamelJacksonUnmarshalType ヘッダを使用することが許可される。使用したい場合のみ有効にすること。
 | timezone |  | String | 設定された場合に、マーシャリングもしくはアンマーシャリングのときに Jackson は Timezone を使用する。このオプションは、gson、fastjson、や xstream といった他の JSON データフォーマットには影響は及ぼさない。
 | contentTypeHeader | false | Boolean | データフォーマットが、Content-Type ヘッダを設定できる場合に、Content-Type ヘッダを設定するか否かを指定する。たとえば XML へのマーシャリング時に application/xml を設定したり、JSON へのマーシャリング時に application/json を設定する。
