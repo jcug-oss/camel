@@ -1,0 +1,377 @@
+[[jacksonxml-dataformat]]
+== JacksonXML データフォーマット
+
+*Camel version 2.16 から利用可能*
+
+Jackson XML は、http://wiki.fasterxml.com/JacksonHome/[Jackson library] を使用したデータフォーマットである。
+これは、https://github.com/FasterXML/jackson-dataformat-xml[XMLMapper extension] と共に用いられて
+XML ペイロードを Java オブジェクトにアンマーシャリングしたり、Java オブジェクトを XML ペイロードにマーシャリングする。
+
+INFO: Jackson に慣れている場合は、この XML データフォーマットは JSON と同じように機能する。
+よって、JSON のシリアライズ/デシリアライズのためにアノテーションが追加されたクラスと共に使用可能である。
+
+この拡張は、https://github.com/FasterXML/jackson-dataformat-xml/blob/master/README.md[JAXB の "Code first" アプローチ] を真似ている。
+
+このデータフォーマットは、（特に整形のような機能で）速くて効率の良い XML プロセッサである http://wiki.fasterxml.com/WoodstoxHome[Woodstox] に依存している。
+
+
+[source,java]
+-------------------------------
+from("activemq:My.Queue").
+  unmarshal().jacksonxml().
+  to("mqseries:Another.Queue");
+-------------------------------
+
+### JacksonXML オプション
+
+
+
+// dataformat options: START
+JacksonXML データフォーマットは、以下に示した 15 個のオプションをサポートする。
+
+
+
+[width="100%",cols="2s,1m,1m,6",options="header"]
+|===
+| 名前 | デフォルト値 | 型 | 説明
+| xmlMapper |  | String | 与えられた ID の既存の XML マッパーを検索して使用する。
+| prettyPrint | false | Boolean | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。
+| unmarshalTypeName |  | String | アンマーシャリングする場合に使用する Java の型名称を指定する。
+| jsonView |  | Class | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューが使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。
+| include |  | String | いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、このオプションを NON_NULL に設定する。
+| allowJmsType | false | Boolean | JMS ユーザが、JMS 仕様の JMSType ヘッダでアンマーシャリングする FQN クラス名を指定できるようにするために使用される。
+| collectionTypeName |  | String | レジストリ内を検索するために使用するカスタムのコレクションタイプを参照する。このオプションはほとんど使用されないが、デフォルトの java.util.Collection とは異なるコレクションタイプを使用できる。
+| useList | false | Boolean | マップのリストまたは POJO のリストにアンマーシャリングするかを指定する。
+| enableJaxbAnnotationModule | false | Boolean | Jackson を使用している場合に、JAXB アノテーションモジュールを有効にするか否かを指定する。有効な場合に JAXB アノテーションは Jackson で使用される。
+| moduleClassNames |  | String | カスタムの Jackson モジュールである com.fasterxml.jackson.databind.Module を使用するために FQN クラス名とともに文字列で指定する。複数のクラスを指定する場合は、カンマで区切ること。
+| moduleRefs |  | String | Camel レジストリから参照される、カスタムの Jackson モジュールを指定する。複数のモジュールを指定する場合は、カンマで区切ること。
+| enableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で有効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。
+| disableFeatures |  | String | Jackson の com.fasterxml.jackson.databind.ObjectMapper で無効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。
+| allowUnmarshallType | false | Boolean | 有効にされた場合は、Jackson はアンマーシャリング時に CamelJacksonUnmarshalType ヘッダを使用することが許可される。使用したい場合のみ有効にすること。
+| contentTypeHeader | false | Boolean | データフォーマットが、Content-Type ヘッダを設定できる場合に、Content-Type ヘッダを設定するか否かを指定する。たとえば XML へのマーシャリング時に application/xml を設定したり、JSON へのマーシャリング時に application/json を設定する。
+|===
+// dataformat options: END
+// spring-boot-auto-configure options: START
+=== Spring Boot Auto-Configuration
+
+
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-jacksonxml-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----
+
+
+コンポーネントは、以下に示した 16 個のオプションをサポートする。
+
+
+
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *camel.dataformat.jacksonxml.allow-jms-type* | JMS ユーザが、JMS 仕様の JMSType ヘッダでアンマーシャリングする FQN クラス名を指定できるようにするために使用される。 | false | Boolean
+| *camel.dataformat.jacksonxml.allow-unmarshall-type* | 有効にされた場合は、Jackson はアンマーシャリング時に CamelJacksonUnmarshalType ヘッダを使用することが許可される。使用したい場合のみ有効にすること。 | false | Boolean
+| *camel.dataformat.jacksonxml.collection-type-name* | レジストリ内を検索するために使用するカスタムのコレクションタイプを参照する。このオプションはほとんど使用されないが、デフォルトの java.util.Collection とは異なるコレクションタイプを使用できる。 |  | String
+| *camel.dataformat.jacksonxml.content-type-header* | データフォーマットが、Content-Type ヘッダを設定できる場合に、Content-Type ヘッダを設定するか否かを指定する。たとえば XML へのマーシャリング時に application/xml を設定したり、JSON へのマーシャリング時に application/json を設定する。 | false | Boolean
+| *camel.dataformat.jacksonxml.disable-features* | Jackson の com.fasterxml.jackson.databind.ObjectMapper で無効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 |  | String
+| *camel.dataformat.jacksonxml.enable-features* | Jackson の com.fasterxml.jackson.databind.ObjectMapper で有効にする機能を指定する。機能は、com.fasterxml.jackson.databind.SerializationFeature、com.fasterxml.jackson.databind.DeserializationFeature、com.fasterxml.jackson.databind.MapperFeature 内の enum に一致した名称でなくてはならない。複数の機能を指定する場合は、カンマで区切ること。 |  | String
+| *camel.dataformat.jacksonxml.enable-jaxb-annotation-module* | Jackson を使用している場合に、JAXB アノテーションモジュールを有効にするか否かを指定する。有効な場合に JAXB アノテーションは Jackson で使用される。 | false | Boolean
+| *camel.dataformat.jacksonxml.enabled* | Jackson XML データフォーマットを有効にする。Enable jacksonxml dataformat | true | Boolean
+| *camel.dataformat.jacksonxml.include* | いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、このオプションを NON_NULL に設定する。 |  | String
+| *camel.dataformat.jacksonxml.json-view* | POJO から JSON にマーシャリングする場合に、JSON 出力から特定のフィールドを除外したい場合がある。これを実現するために、Jackson の JSON ビューを使用できる。このオプションは、JsonView アノテーションを持つクラスを参照する。 |  | Class
+| *camel.dataformat.jacksonxml.module-class-names* | カスタムの Jackson モジュールである com.fasterxml.jackson.databind.Module を使用するために FQN クラス名とともに文字列で指定する。複数のクラスを指定する場合は、カンマで区切ること。 |  | String
+| *camel.dataformat.jacksonxml.module-refs* | Camel レジストリから参照される、カスタムの Jackson モジュールを指定する。複数のモジュールを指定する場合は、カンマで区切ること。 |  | String
+| *camel.dataformat.jacksonxml.pretty-print* | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。 | false | Boolean
+| *camel.dataformat.jacksonxml.unmarshal-type-name* | アンマーシャリングの場合に使用する Java の型名称を指定する。 |  | String
+| *camel.dataformat.jacksonxml.use-list* | マップのリストまたは POJO のリストにアンマーシャリングするかを指定する。 | false | Boolean
+| *camel.dataformat.jacksonxml.xml-mapper* | 与えられた既存の XmlMapper の ID を検索して使用する。 |  | String
+|===
+// spring-boot-auto-configure options: END
+
+
+#### Spring DSL での Jackson XML の使用
+
+Spring DSL でデータフォーマットを使用する場合は、まずデータフォーマットを宣言する必要がある。
+これは、*DataFormats* XML タグで可能である。
+
+[source,xml]
+-----------------------------------------------------------------------------------------------------------------------------
+        <dataFormats>
+            <!-- ここでは、ID を Jack として XML データフォーマットを定義しており、アンマーシャリングの場合に TestPojo をクラスとして使用する。unmarshalTypeName はオプションであり、指定されていない場合は Camel は型として Map を使用する。 -->
+            <jacksonxml id="jack" unmarshalTypeName="org.apache.camel.component.jacksonxml.TestPojo"/>
+        </dataFormats>
+-----------------------------------------------------------------------------------------------------------------------------
+
+ID はルート内で参照可能となる:
+
+[source,xml]
+-------------------------------------
+       <route>
+            <from uri="direct:back"/>
+            <unmarshal><custom ref="jack"/></unmarshal>
+            <to uri="mock:reverse"/>
+        </route>
+-------------------------------------
+
+### マーシャリング時に POJO フィールドを除外する
+
+POJO を XML にマーシャリングする場合に、特定のフィールドを XML 出力から除外したいことがある。
+Jackson では http://wiki.fasterxml.com/JacksonJsonViews[JSON views] で可能である。
+まず、1 つ以上のマーカクラスを生成する。
+
+マーカクラスの特定のフィールドに `@JsonView` アノテーションを付けることで含めたり除外したりできる。
+アノテーションはゲッターにも付与できる。
+
+最後に、POJO から XML にマーシャリングするために Camel の `JacksonXMLDataFormat` を使用する。
+
+結果の XML で weight フィールドが無くなっていることに注意すること:
+
+
+[source,java]
+----------------------------
+<pojo age="30" weight="70"/>
+----------------------------
+
+### `JacksonXML` データフォーマットの `jsonView` 属性を使用した、フィールドの包含と除外
+
+この属性を使用した例として、以下のように書く代わりに:
+
+[source,java]
+---------------------------------------------------------------------------------------------------
+JacksonXMLDataFormat ageViewFormat = new JacksonXMLDataFormat(TestPojoView.class, Views.Age.class);
+from("direct:inPojoAgeView").
+  marshal(ageViewFormat);
+---------------------------------------------------------------------------------------------------
+
+Java DSL 内に次のように http://wiki.fasterxml.com/JacksonJsonViews[JSON view] を直接指定することができる:
+
+[source,java]
+------------------------------------------------------------
+from("direct:inPojoAgeView").
+  marshal().jacksonxml(TestPojoView.class, Views.Age.class);
+------------------------------------------------------------
+
+XML DSL で同様に書くには以下のようにする:
+
+[source,xml]
+---------------------------------------------------------------------------------------------------------------------------------------------------
+<from uri="direct:inPojoAgeView"/>
+  <marshal>
+    <jacksonxml unmarshalTypeName="org.apache.camel.component.jacksonxml.TestPojoView" jsonView="org.apache.camel.component.jacksonxml.Views$Age"/>
+  </marshal>
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+### オプションを含んだシリアライズの設定
+
+いくつかの NULL 値をもつ POJO から JSON にマーシャリングする場合に、それらの NULL 値をスキップするには、
+POJO にアノテーションを設定する。
+
+[source,java]
+------------------------------
+@JsonInclude(Include.NON_NULL)
+public class MyPojo {
+   ...
+}
+------------------------------
+
+しかし、この方法では POJO のソースコードにアノテーションを含める必要がある。
+以下に示すように Camel の JacksonXMLDataFormat で、このオプションを設定することができる:
+
+
+[source,java]
+---------------------------------------------------------
+JacksonXMLDataFormat format = new JacksonXMLDataFormat();
+format.setInclude("NON_NULL");
+---------------------------------------------------------
+
+または、XML DSL では以下のように設定する。
+
+[source,java]
+------------------------------------------------------
+    <dataFormats>
+      <jacksonxml id="jacksonxml" include="NON_NULL"/>
+    </dataFormats>
+------------------------------------------------------
+
+### 動的なクラス名で XML から POJO にアンマーシャリングする
+
+Jackson を使用して XML から POJO にアンマーシャリングする場合に、
+アンマーシャリングした結果を保持するクラス名をメッセージのヘッダに指定することが可能である。
+ヘッダは `CamelJacksonUnmarshalType` のキーを持っており、メッセージ内にヘッダが存在している場合は、Jackson は XML ペイロードを
+アンマーシャリングする POJO クラスの FQN として使用する。
+
+JMS ユーザに対して同様の機能を指定するために JMS 仕様の JMSType ヘッダがある。
+JMSType のサポートを有効化するためには、Jackson データフォーマットを以下に示すようにする:
+
+[source,java]
+---------------------------------------------------
+JacksonDataFormat format = new JacksonDataFormat();
+format.setAllowJmsType(true);
+---------------------------------------------------
+
+もしくは XML DSL で以下のように設定できる。
+
+[source,java]
+-------------------------------------------------------
+    <dataFormats>
+      <jacksonxml id="jacksonxml" allowJmsType="true"/>
+    </dataFormats>
+-------------------------------------------------------
+
+### XML から List<Map> または List<pojo> へのアンマーシャリング
+
+Jackson を使用して XML をマップもしくは POJO のリストにアンマーシャリングする場合に
+`useList="true"` を設定するか、`org.apache.camel.component.jacksonxml.ListJacksonXMLDataFormat` を指定できる。
+たとえば、Java では以下のように設定する:
+
+[source,java]
+-------------------------------------------------------------
+JacksonXMLDataFormat format = new ListJacksonXMLDataFormat();
+// または
+JacksonXMLDataFormat format = new JacksonXMLDataFormat();
+format.useList();
+// POJO クラスも指定できる。
+format.setUnmarshalType(MyPojo.class);
+-------------------------------------------------------------
+
+XML DSL を使用する場合は、以下のようにして `useList` 属性でリストの使用を指定することができる:
+
+[source,java]
+--------------------------------------------
+    <dataFormats>
+      <jacksonxml id="jack" useList="true"/>
+    </dataFormats>
+--------------------------------------------
+
+また、POJO の型を指定することも可能である。
+
+[source,java]
+-------------------------------------------------------------------------------
+    <dataFormats>
+      <jacksonxml id="jack" useList="true" unmarshalTypeName="com.foo.MyPojo"/>
+    </dataFormats>
+-------------------------------------------------------------------------------
+
+### カスタムの Jackson モジュールの使用
+
+以下に示すように、moduleClassNames オプションを使用してクラス名を指定することにより、
+カスタムの Jackson モジュールが使用できる。
+
+[source,java]
+-----------------------------------------------------------------------------------------------------------------------------------------
+    <dataFormats>
+      <jacksonxml id="jack" useList="true" unmarshalTypeName="com.foo.MyPojo" moduleClassNames="com.foo.MyModule,com.foo.MyOtherModule"/>
+    </dataFormats>
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+moduleClassNames を使用する場合は、デフォルトコンストラクタを使って生成され、
+そのまま使用されるカスタムの Jackson モジュールは設定されない。
+カスタムモジュールが、カスタムの設定を必要とする場合は、モジュールのインスタンスが生成されて設定される。
+それから、以下のようにして modulesRefs を使用してモジュールを参照する:
+
+[source,java]
+------------------------------------------------------------------------------------------------------------------
+    <bean id="myJacksonModule" class="com.foo.MyModule">
+      ... // 必要に応じてモジュールを設定する
+    </bean>
+ 
+    <dataFormats>
+      <jacksonxml id="jacksonxml" useList="true" unmarshalTypeName="com.foo.MyPojo" moduleRefs="myJacksonModule"/>
+    </dataFormats>
+------------------------------------------------------------------------------------------------------------------
+
+複数のモジュールは、moduleRefs="myJacksonModule,myOtherModule" のようにカンマで区切られて指定される。
+
+### Jackson の機能の有効化、無効化
+
+Jackson は有効化もしくは無効化できる多数の機能を持っていて、それらの機能は ObjectMapper が使用している。
+たとえば、マーシャリング時において未知のプロパティが見つかった場合に失敗とする機能を無効化するには、disableFeatures を使って設定できる:
+
+[source,java]
+-------------------------------------------------------------------------------------------------------------------
+ <dataFormats>
+      <jacksonxml id="jacksonxml" unmarshalTypeName="com.foo.MyPojo" disableFeatures="FAIL_ON_UNKNOWN_PROPERTIES"/>
+ </dataFormats>
+-------------------------------------------------------------------------------------------------------------------
+
+カンマを使って、値を分割することにより複数の機能を無効化できる。
+機能の値は、以下に示すJackson の enum クラス内の名称でなくてはならない。
+
+* com.fasterxml.jackson.databind.SerializationFeature
+* com.fasterxml.jackson.databind.DeserializationFeature
+* com.fasterxml.jackson.databind.MapperFeature
+
+機能を有効にするには、enableFeatures オプションを使用する。
+
+Java のコードでは、camel-jackson モジュールのタイプセーフなメソッドを使用できる:
+
+[source,java]
+----------------------------------------------------------------------
+JacksonDataFormat df = new JacksonDataFormat(MyPojo.class);
+df.disableFeature(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+df.disableFeature(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
+----------------------------------------------------------------------
+
+### Jackson を使用したマップから POJO への変換
+
+Jackson の `ObjectMapper` はマップから POJO オブジェクトへの変換に使用できる。
+Jackson コンポーネントは `java.util.Map` インスタンスを String 型でもなく、
+プリミティブ型でもなく、数値型でもないオブジェクトへの変換に使用できるコンバータを備えている。
+
+[source,java]
+----------------------------------------------------------------
+Map<String, Object> invoiceData = new HashMap<String, Object>();
+invoiceData.put("netValue", 500);
+producerTemplate.sendBody("direct:mapToInvoice", invoiceData);
+...
+// 後続のプロセッサでの処理で
+Invoice invoice = exchange.getIn().getBody(Invoice.class);
+----------------------------------------------------------------
+
+1 つの `ObjectMapper` インスタンスが Camel レジストリで使用可能な場合は、そのインスタンスが変換に使用される。
+それ以外の場合は、デフォルトのマッパーが使用される。
+
+### フォーマットされた XML マーシャリング（読みやすく整形させる）
+
+`prettyPrint` オプションを使用すると、マーシャリング時にフォーマットされた XML 出力が得られる:
+
+
+[source,java]
+------------------------------------------------
+ <dataFormats>
+      <jacksonxml id="jack" prettyPrint="true"/>
+ </dataFormats>
+------------------------------------------------
+
+Java DSL では以下となる:
+
+[source,java]
+---------------------------------------------------
+from("direct:inPretty").marshal().jacksonxml(true);
+---------------------------------------------------
+
+`unmarshalType`、`jsonView` などの設定と組み合わせて使用する `prettyPrint` オプションを
+サポートした 5 つのオーバロードされた `jacksonxml()` DSL メソッドがあることに注意すること。
+
+### 依存性
+
+Camel のルートで Jackson XML を使用するためには、データフォーマットを実装した *camel-jacksonxml* 依存性を追加する必要がある。
+
+Maven を使用している場合は、pom.xml に次の依存性を追加する。 バージョン番号は最新で一番最近のリリースに置き換えること （最新バージョンについてはダウンロードページを参照すること）。
+
+
+[source,xml]
+----------------------------------------------------------
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-jacksonxml</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----------------------------------------------------------
