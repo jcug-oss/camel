@@ -1,0 +1,258 @@
+## Jasypt コンポーネント
+
+*Camel 2.5 から利用可能*
+
+http://www.jasypt.org/[Jasypt] は、暗号化と復号化を容易にする簡素化された暗号化ライブラリである。
+Camel は <<properties-component,Properties>> ファイル内の機密情報が暗号化されるように Jasypt と連携できる。
+ *`camel-jasypt`* をクラスパスに置くことで、暗号化された値は、実行中の Camel によって自動的に復号化される。
+これにより、ユーザ名とパスワードといった機密情報が人間の目に容易に触れることはなくなる。
+
+Maven を使用している場合は、このコンポーネントのために次の依存性を `pom.xml` に追加する必要がある:
+
+
+[source,xml]
+------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jasypt</artifactId>
+    <version>x.x.x</version>
+    <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+------------------------------------------------------------
+
+Apache Karaf コンテナを使用している場合は、このコンポーネントのために次の依存性を `pom.xml` に追加する必要がある:
+
+[source,xml]
+------------------------------------------------------------
+<dependency>
+  <groupId>org.apache.karaf.jaas</groupId>
+  <artifactId>org.apache.karaf.jaas.jasypt</artifactId>
+  <version>x.x.x.x</version>			
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+------------------------------------------------------------
+
+
+### ツール
+
+Jasypt コンポーネントは、値を暗号化、復号化するためのコマンドラインツールを提供している。
+
+ツールのオプションが提供するコンソール出力、シンタックスは以下の通りである:
+
+[source,java]
+--------------------------------------------------------------
+Apache Camel Jasypt は次のオプションを使用する
+
+  -h or -help = ヘルプを表示する
+  -c or -command <command> = 暗号化または復号化のコマンド
+  -p or -password <password> = 使用するパスワード
+  -i or -input <input> = 暗号化または復号化するテキスト
+  -a or -algorithm <algorithm> = 使用する（オプションの）アルゴリズム
+--------------------------------------------------------------
+
+たとえば `tiger` という値を暗号化するには、次のパラメータで実行する。
+Camel のディストリビューションをダウンロードして展開したフォルダ _<CAMEL_HOME>_ で、lib フォルダに cd してから次の java コマンドを実行する。
+
+[source,java]
+----------------------------------------------------------------
+$ cd <CAMEL_HOME>/lib
+$ java -jar camel-jasypt-2.5.0.jar -c encrypt -p secret -i tiger
+----------------------------------------------------------------
+
+次の結果が出力される。
+
+[source,java]
+----------------------------------------
+Encrypted text: qaEEacuW7BUti8LcMgyjKw==
+----------------------------------------
+
+これは、マスタパスワードである `secret` を知っていれば、暗号化された表現である `qaEEacuW7BUti8LcMgyjKw==` が `tiger` に復号化できることを意味している。 +
+ツールを再実行すると、異なる結果の暗号化された値が返却される。しかし復号化すると元の値を正しく返す。
+
+次のパラメータを使用して、ツールを実行することにより確認できる:
+
+[source,java]
+-----------------------------------------------------------------------------------
+$ cd <CAMEL_HOME>/lib
+$ java -jar camel-jasypt-2.5.0.jar -c decrypt -p secret -i qaEEacuW7BUti8LcMgyjKw==
+-----------------------------------------------------------------------------------
+
+出力結果は次の通りである:
+
+[source,java]
+---------------------
+Decrypted text: tiger
+---------------------
+
+<<properties-component,Properties>> ファイル内で暗号化された値を使うための方法を示す。
+パスワードの値がどのように暗号化されていて、値が `ENC(ここに値を入れる)` で囲まれていることに注意すること。
+
+TIP: jasypt ツールを実行する際に、 `java.lang.NoClassDefFoundError: org/jasypt/encryption/pbe/StandardPBEStringEncryptor` となった場合は、クラスパスに jasypt{version}.jar を含めること。たとえば `java -jar ...` を実行する場合に、クラスパスに jar を追加するには jasypt{version}.jar を $JAVA_HOME\jre\lib\ext にコピーする。もしくは `-cp` を使って jasypt{version}.jar をクラスパスに追加する。この場合は、以下のようにメインクラスを指定すること: `java -cp jasypt-1.9.2.jar:camel-jasypt-2.18.2.jar org.apache.camel.component.jasypt.Main -c encrypt -p secret -i tiger`
+
+
+### URI オプション
+
+以下のオプションは Jasypt コンポーネントに特有のものである。
+
+[width="100%",cols="10%,10%,10%,70%",options="header",]
+|===
+| 名前 | デフォルト値 | 型 | 説明
+|`password` |`null` |`String` |復号化に使用するマスターパスワード。このオプションは必須である。詳細は下記を参照すること。
+
+|`algorithm` |`null` |`String` |使用するアルゴリズム名称。
+|===
+
+### マスターパスワードを保護する
+
+Jasypt により使用されるマスターパスワードは、値を復号化するために提供されなければならない。
+しかし、マスターパスワードを公開された場所に置いておくことは理想的な方法ではないかもしれない。
+たとえば JVM システムプロパティや OS の環境設定でマスターパスワードを与えることができる。
+そのようにする場合は、`password` オプションがプレフィックスをサポートしている。
+`sysenv:` は与えられたキーで OS システム環境を参照する。`sys:` は JVM システムプロパティを参照する。
+
+たとえば、アプリケーションを起動する前に、以下のようにパスワードを提供できる。
+
+
+[source,java]
+-----------------------------------------
+$ export CAMEL_ENCRYPTION_PASSWORD=secret
+-----------------------------------------
+
+起動スクリプトなどを実行して、アプリケーションを起動したら、環境を戻す。
+
+[source,java]
+---------------------------------
+$ unset CAMEL_ENCRYPTION_PASSWORD
+---------------------------------
+
+`password` オプションは、次のようにして定義しておく:
+
+`password=sysenv:CAMEL_ENCRYPTION_PASSWORD`.
+
+### Java DSL を使った例
+
+Java DSL では、以下に示すように <<properties-component,Properties>> コンポーネント上で Jasypt を `JasyptPropertiesParser` インスタンスとして設定する必要がある:
+
+`myproperties.properties` のプロパティファイルは、以下に示すように暗号化された値を含んでいる。パスワードの値がどのように暗号化されているか、
+また値が `ENC(ここに値を入れる)` で囲まれていることに注意すること.
+
+### Spring XML を使った例
+
+Spring XML では、以下に示すように `JasyptPropertiesParser` を設定する必要がある。
+それから、Camel の <<properties-component,Properties>> コンポーネントは、プロパティパーサとして `jasypt` を使用しプロパティ内を検索して値を復号化する。
+
+[source,xml]
+-----------------------------------------------------------------------------------------------------------
+<!-- 使用されるパスワードを与えて jasypt プロパティパーサを定義する -->
+<bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+    <property name="password" value="secret"/>
+</bean>
+ 
+<!-- camel プロパティコンポーネントを定義する -->
+<bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <!-- クラスパス内のプロパティファイル -->
+    <property name="location" value="classpath:org/apache/camel/component/jasypt/myproperties.properties"/>
+    <!-- jasypt パーサを利用する -->
+    <property name="propertiesParser" ref="jasypt"/>
+</bean>
+-----------------------------------------------------------------------------------------------------------
+
+<<properties-component,Properties>> コンポーネントは、以下に示すように `<camelContext>` タグ内に記述できる。
+Jasypt を参照するために、どのように `propertiesParserRef` 属性を使用しているかに注意すること。
+
+[source,java]
+--------------------------------------------------------------------------------------------------------------
+<!-- 使用されるパスワードを与えて jasypt プロパティパーサを定義する -->
+<bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+    <!-- パスワードは必須。 OS 環境変数もしくは JVM システムプロパティ値を使うために sysenv: もしくは sys: をプレフィックスに使うことができる。よってマスタパスワードをここで定義する必要はない。 -->
+    <property name="password" value="secret"/>
+</bean>
+ 
+<camelContext xmlns="http://camel.apache.org/schema/spring">
+    <!-- camel プロパティプレースホルダを定義して、jasypt を利用する -->
+    <propertyPlaceholder id="properties"
+                         location="classpath:org/apache/camel/component/jasypt/myproperties.properties"
+                         propertiesParserRef="jasypt"/>
+    <route>
+        <from uri="direct:start"/>
+        <to uri="{{cool.result}}"/>
+    </route>
+</camelContext>
+--------------------------------------------------------------------------------------------------------------
+
+### Blueprint XML を使った例
+
+Blueprint XML  では、以下に示すように `JasyptPropertiesParser` を設定する必要がある。
+それから、Camel の <<properties-component,Properties>> コンポーネントは、プロパティパーサとして `jasypt` を使用しプロパティ内を検索して値を復号化する。
+
+[source,xml]
+----------------------------------------------------------------------------------------------------------------
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xsi:schemaLocation="
+           http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <cm:property-placeholder id="myblue" persistent-id="mypersistent">
+      <!-- テストのためにいくつかのプロパティを一覧化しておく -->
+      <cm:default-properties>
+          <cm:property name="cool.result" value="mock:{{cool.password}}"/>
+          <cm:property name="cool.password" value="ENC(bsW9uV37gQ0QHFu7KO03Ww==)"/>
+      </cm:default-properties>
+  </cm:property-placeholder>
+
+    <!-- 使用されるパスワードを与えて jasypt プロパティパーサを定義する -->
+    <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+        <property name="password" value="secret"/>
+    </bean>
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+      <!-- camel プロパティプレースホルダを定義して、jasypt を利用する -->
+      <propertyPlaceholder id="properties"
+                           location="blueprint:myblue"
+                           propertiesParserRef="jasypt"/>
+        <route>
+            <from uri="direct:start"/>
+            <to uri="{{cool.result}}"/>
+        </route>
+    </camelContext>
+
+</blueprint>
+----------------------------------------------------------------------------------------------------------------
+
+<<properties-component,Properties>> コンポーネントは、以下に示すように `<camelContext>` タグ内に記述できる。
+Jasypt を参照するために、どのように `propertiesParserRef` 属性を使用しているかに注意すること。
+
+[source,xml]
+----------------------------------------------------------------------------------------------------------------
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xsi:schemaLocation="
+           http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!-- 使用されるパスワードを与えて jasypt プロパティパーサを定義する -->
+    <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+        <property name="password" value="secret"/>
+    </bean>
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+      <!-- camel プロパティプレースホルダを定義して、jasypt を利用する -->
+      <propertyPlaceholder id="properties"
+                           location="classpath:org/apache/camel/component/jasypt/myproperties.properties"
+                           propertiesParserRef="jasypt"/>
+        <route>
+            <from uri="direct:start"/>
+            <to uri="{{cool.result}}"/>
+        </route>
+    </camelContext>
+
+</blueprint>
+----------------------------------------------------------------------------------------------------------------
+
+### 以下も参照すること
+
+* Security
+* <<properties-component,Properties>>
+* http://activemq.apache.org/encrypted-passwords.html[Encrypted
+passwords in ActiveMQ] - ActiveMQ は `camel-jasypt` コンポーネントと似た機能を持っている
