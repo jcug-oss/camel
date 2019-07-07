@@ -1,0 +1,312 @@
+[[jaxb-dataformat]]
+== JAXB データフォーマット
+
+*Camel 1.0 から利用可能*
+JAXB は Java 6 に含まれているマーシャリングの標準である JAXB2 XML を使用したデータフォーマットであり、
+XML ペイロードを Java オブジェクトにアンマーシャリングしたり Java オブジェクトを XML ペイロードにマーシャリングしたりする。
+
+### オプション
+
+// dataformat options: START
+JAXB データフォーマットは、下記に示す 18 個のオプションをサポートしている。
+
+
+
+[width="100%",cols="2s,1m,1m,6",options="header"]
+|===
+| 名前 | デフォルト値 | 型 | 説明
+| contextPath |  | String | JAXB クラスが配置されているパッケージ名である。
+| schema |  | String | 既存のスキーマに対してバリデートするための文字列。リソースの解決のために classpath: と file: もしくは http: のプレフィックスが使用できる。複数のスキーマファイルを ',' を用いることで分離できる。
+| schemaSeverityLevel | 0 | Integer | スキーマに対してバリデートを行う際に使用するスキーマの重要度を設定する。このレベルは JAXB がパースを停止させるための最低レベルの重要度を決定する。デフォルト値 0 ( 警告 ) は、いかなるエラー ( 警告、エラーもしくは致命的エラー ) でも JAXB が停止することを意味する。次の 3 つのレベルがある: 0= 警告、1= エラー, 2= 致命的エラー
+| prettyPrint | false | Boolean | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。
+| objectFactory | false | Boolean | マーシャリングの際に POJO クラスを作成するために ObjectFactory クラスの使用を許可するか否かを指定する。これは、JAXB のアノテーションがなく、jaxb.index 記述子ファイルを提供している POJO クラスにのみ適用される。
+| ignoreJAXBElement | false | Boolean | JAXBElement 要素を無視するか否かを決定する。特別なユースケースにおいてのみ false に設定される必要がある。
+| mustBeJAXBElement | false | Boolean | マーシャリングが JAXB アノテーションを持つ java オブジェクトでなくてはならないかどうかを示す。もし、そうでない場合は失敗する。データが既に XML フォーマットである場合などのために、このオプションは false に設定できる。
+| filterNonXmlChars | false | Boolean | XML 文字ではないものを無視し、それらを空白に置き換える。
+| encoding |  | String | 特定のエンコーディングを無効化する。また有効化する。
+| fragment | false | Boolean | XML フラグメントツリーのマーシャリングをオンにする。デフォルトでは JAXB は与えられたクラスで XmlRootElement アノテーションを検索する。これは常に有用とはいえない。生成されたコードは XmlRootElement アノテーションを持っていないこともあるし、ツリーの一部のみアンマーシャリングできればよいこともある。そのような場合には、部分的なアンマーシャリングが使用できる。この動作を有効にするために partClass プロパティを設定する必要がある。Camel はこのクラスを JAXB のアンマーシャラーに渡す。
+| partClass |  | String | フラグメントパースに使用されるクラス名。詳細はフラグメントオプションを参照すること。
+| partNamespace |  | String | フラグメントパースのために使用する XML 名前空間である。詳細はフラグメントオプションを参照のこと。
+| namespacePrefixRef |  | String | JAXB もしくは SOAP を使用してマーシャリングする際に、JAXB の実装は ns2、ns3、ns4 といったような自動で名前空間のプレフィックスを割り当てる。このマッピングを制御するために、Camel は、望ましい名前のマッピングを保持するマップを参照できる。
+| xmlStreamWriterWrapper |  | String | カスタムの XML ストリームライターを使用する。
+| schemaLocation |  | String | スキーマの場所を定義する。
+| noNamespaceSchemaLocation |  | String | 名前空間のないスキーマの場所を定義する。
+| jaxbProviderProperties |  | String | レジストリを検索するためのカスタム java.util.Map を参照する。そのレジストリは JAXB マーシャラーと共に使用されるカスタムの JAXB プロバイダプロパティを含んでいる。
+| contentTypeHeader | false | Boolean | 可能な場合にデータフォーマットが Content-Type ヘッダにデータフォーマットからの型を設定すべきか否かを指定する。たとえば XML へのマーシャリングするデータフォーマットに対して application/xml を設定したり JSon へのマーシャリングするデータフォーマットに対して application/json などを設定する。
+|===
+// dataformat options: END
+// spring-boot-auto-configure options: START
+=== Spring Boot Auto-Configuration
+
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-jaxb-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----
+
+コンポーネントは、以下に示した 19 個のオプションをサポートする。
+
+
+
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *camel.dataformat.jaxb.content-type-header* | 可能な場合にデータフォーマットが Content-Type ヘッダにデータフォーマットからの型を設定すべきか否かを指定する。たとえば XML へのマーシャリングするデータフォーマットに対して application/xml を設定したり JSon へのマーシャリングするデータフォーマットに対して application/json などを設定する。 | false | Boolean
+| *camel.dataformat.jaxb.context-path* | JAXB クラスが配置されているパッケージ名である。 |  | String
+| *camel.dataformat.jaxb.enabled* | jaxb データフォーマットを有効化する | true | Boolean
+| *camel.dataformat.jaxb.encoding* | 特定のエンコーディングを無効化する。また有効化する。To overrule and use a specific encoding |  | String
+| *camel.dataformat.jaxb.filter-non-xml-chars* | XML の文字でないものを無視し、それらを空白文字で置き換える。 | false | Boolean
+| *camel.dataformat.jaxb.fragment* | XML フラグメントツリーのマーシャリングをオンにする。デフォルトでは JAXB は与えられたクラスで XmlRootElement アノテーションを検索する。これは常に有用とはいえない。生成されたコードは XmlRootElement アノテーションを持っていないこともあるし、ツリーの一部のみアンマーシャリングできればよいこともある。そのような場合には、部分的なアンマーシャリングが使用できる。この動作を有効にするために partClass プロパティを設定する必要がある。Camel はこのクラスを JAXB のアンマーシャラーに渡す。 | false | Boolean
+| *camel.dataformat.jaxb.ignore-j-a-x-b-element* | JAXBElement 要素を無視するか否かを決定する。特別なユースケースにおいてのみ false に設定される必要がある。 | false | Boolean
+| *camel.dataformat.jaxb.jaxb-provider-properties* | レジストリを検索するためのカスタム java.util.Map を参照する。そのレジストリは JAXB マーシャラーと共に使用されるカスタムの JAXB プロバイダプロパティを含んでいる。 |  | String
+| *camel.dataformat.jaxb.must-be-j-a-x-b-element* | マーシャリングが JAXB アノテーションを持つ java オブジェクトでなくてはならないかどうかを示す。もし、そうでない場合は失敗する。データが既に XML フォーマットである場合などのために、このオプションは false に設定できる。 | false | Boolean
+| *camel.dataformat.jaxb.namespace-prefix-ref* | JAXB もしくは SOAP を使用してマーシャリングする際に、JAXB の実装は ns2、ns3、ns4 といったような自動で名前空間のプレフィックスを割り当てる。このマッピングを制御するために、Camel は、望ましい名前のマッピングを保持するマップを参照できる。 |  | String
+| *camel.dataformat.jaxb.no-namespace-schema-location* | To define the location of the namespaceless schema |  | String
+| *camel.dataformat.jaxb.object-factory* | マーシャリングの際に POJO クラスを作成するために ObjectFactory クラスの使用を許可するか否かを指定する。これは、JAXB のアノテーションがなく、jaxb.index 記述子ファイルを提供している POJO クラスにのみ適用される。 | false | Boolean
+| *camel.dataformat.jaxb.part-class* | フラグメントパースに使用されるクラス名。詳細はフラグメントオプションを参照すること。 |  | String
+| *camel.dataformat.jaxb.part-namespace* | フラグメントパースのために使用する XML 名前空間である。詳細はフラグメントオプションを参照のこと。 |  | String
+| *camel.dataformat.jaxb.pretty-print* | 読みやすく整形された出力にするか否かを指定する。デフォルトでは false である。 | false | Boolean
+| *camel.dataformat.jaxb.schema* | 既存のスキーマに対してバリデートするための文字列。リソースの解決のために classpath: と file: もしくは http: のプレフィックスが使用できる。複数のスキーマファイルを ',' を用いることで分離できる。 |  | String
+| *camel.dataformat.jaxb.schema-location* | スキーマの場所を定義する。 |  | String
+| *camel.dataformat.jaxb.schema-severity-level* | スキーマに対してバリデートを行う際に使用するスキーマの重要度を設定する。このレベルは JAXB がパースを停止させるための最低レベルの重要度を決定する。デフォルト値 0 ( 警告 ) は、いかなるエラー ( 警告、エラーもしくは致命的エラー ) でも JAXB が停止することを意味する。次の 3 つのレベルがある: 0= 警告、1= エラー, 2= 致命的エラー
+| *camel.dataformat.jaxb.xml-stream-writer-wrapper* | カスタムの XML ストリームライターを使用する。 |  | String
+|===
+// spring-boot-auto-configure options: END
+ND
+
+### Java DSL の使用
+
+以下の例では、http://java.sun.com/javase/6/docs/api/javax/xml/bind/JAXBContext.html[JAXBContext] を初期化するための Java パッケージ名で設定されている _jaxb_ のデータフォーマットを使用している。
+
+[source,java]
+-------------------------------------------------------
+DataFormat jaxb = new JaxbDataFormat("com.acme.model");
+
+from("activemq:My.Queue").
+  unmarshal(jaxb).
+  to("mqseries:Another.Queue");
+-------------------------------------------------------
+
+好みで、Spring XML ファイルなどでレジストリ内に定義したデータフォーマットの名前付き参照を使用することもできる。
+
+[source,java]
+-------------------------------
+from("activemq:My.Queue").
+  unmarshal("myJaxbDataType").
+  to("mqseries:Another.Queue");
+-------------------------------
+
+### Spring XML の使用
+
+次の例では、JAXB データタイプの設定を Spring を用いて行い JAXB を使用してアンマーシャリングを行う方法について示す。
+
+この例では、1 度だけデータタイプの設定を行い、複数のルートで再利用する方法について示す。
+
+*複数のコンテキストパス*
+
+1 つ以上のコンテキストパスでデータフォーマットを使用することが可能である。
+例えば、`com.mycompany:com.mycompany2` のように `:` をセパレータとしてコンテキストパスを指定できる。
+これは、JAXB の実装で扱われ、参照実装とは異なるベンダを使用した際はセパレータが異なる可能性があることに注意すること。
+
+### 部分的なマーシャリング / アンマーシャリング
+
+*Camel 2.2.0.* での新機能 +
+JAXB 2 は XML ツリーフラグメントのマーシャリングとアンマーシャリングをサポートしている。
+デフォルトでは、JAXB は XML ツリーを操作するために与えられたクラス上で `@XmlRootElement` アノテーションを検索する。
+これは便利ではあるが、いつも便利であるとは言えない。ときどき生成されたコードは @XmlRootElement アノテーションを持っておらず
+ツリーの一部のみをアンマーシャリングする必要がある。 +
+その場合には、部分的なアンマーシャリングが利用できる。これを有効にするには `partClass` プロパティを設定する必要がある。
+Camel はこのクラスを JAXB のアンマーシャラーに渡す。もし、`JaxbConstants.JAXB_PART_CLASS` がヘッダの 1 つとして設定されていたら
+ ( partClass プロパティがデータフォーマット上に設定されていたとしても ) データフォーマット上のプロパティよりも優先され、ヘッダにセットされたクラスが使用される。
+ 
+ マーシャリングのためには、目的の名前空間の QName に `partNamespace` 属性を追加する必要がある。
+ Spring DSL の例は上記にある。
+ もし `JaxbConstants.JAXB_PART_NAMESPACE` がヘッダの 1 つとして設定されていたら
+ ( partNamespace プロパティがデータフォーマット上に設定されていたとしても ) データフォーマット上のプロパティよりも優先され、ヘッダにセットされたクラスが使用される。`JaxbConstants.JAXB_PART_NAMESPACE` を通して `partNamespace` を設定している場合は、その値 {[namespaceUri]}[localPart] を指定する必要があることに注意すること。
+
+
+[source,java]
+--------------------------------------------------------------------------------------
+   ...
+   .setHeader(JaxbConstants.JAXB_PART_NAMESPACE, simple("{http://www.camel.apache.org/jaxb/example/address/1}address"));
+   ...
+--------------------------------------------------------------------------------------
+
+### フラグメント
+
+*この機能は Camel 2.8.0 での新機能* +
+JaxbDataFormat は JAXB マーシャラーの `Marshaller.JAXB_FRAGMENT` エンコーディングプロパティを設定できる新規のプロパティフラグメントを持っている。
+もし、JAXB マーシャラーに XML 定義を生成させたくない場合は、このオプションを true にすること。デフォルト値は false である。
+
+### XML ではない文字を無視する
+
+*この機能は Camel 2.2.0 での新機能* +
+
+JaxbDataFormat は http://www.w3.org/TR/2004/REC-xml-20040204/#NT-Char[NonXML Character] を無視することをサポートしている。
+filterNonXmlChars プロパティを true に設定することでマーシャリングまたはアンマーシャリング時に JaxbDataFormat は XML ではない文字を " " に置き換える。Exchange プロパティである `Exchange.FILTER_NON_XML_CHARS` を設定することでも可能である。
+
+ 
+[width="100%",cols="30%,10%,60%",options="header",]
+|=======================================================================
+|   | JDK 1.5 | JDK 1.6+
+
+|Filtering in use |StAX API and implementation |No
+
+|Filtering not in use |StAX API only |No
+|=======================================================================
+
+この機能は、Woodstox 3.2.9 と Sun JDK 1.6 StAX 実装でテストされた。
+
+*Camel 2.12.1 での新機能* +
+JaxbDataFormat ではストリームを XML にマーシャリングするために使用される XMLStreamWriter をカスタマイズできる。
+この設定を用いると、XML ではない文字を完全に削除したりエスケープしたり置き換えたりするために自分自身のストリームライターを追加できる。
+
+[source,java]
+--------------------------------------------------------------------------------------
+   JaxbDataFormat customWriterFormat = new JaxbDataFormat("org.apache.camel.foo.bar");
+  customWriterFormat.setXmlStreamWriterWrapper(new TestXmlStreamWriter());
+--------------------------------------------------------------------------------------
+
+次の例では、Spring DSL を使用して Camel の XML ではない文字のフィルタリングを有効にしている:
+
+[source,xml]
+------------------------------------------------------------------------------------------------------------------------------
+<bean id="testXmlStreamWriterWrapper" class="org.apache.camel.jaxb.TestXmlStreamWriter"/>
+<jaxb filterNonXmlChars="true"  contextPath="org.apache.camel.foo.bar" xmlStreamWriterWrapper="#testXmlStreamWriterWrapper" />
+------------------------------------------------------------------------------------------------------------------------------
+
+### オブジェクトファクトリでの作業
+
+もしスキーマから Java クラスを生成するのに XJC を使用している場合は、JAXB コンテキストのためのオブジェクトファクトリが得られる。
+オブジェクトファクトリは、スキーマ参照と要素のインスタンス値を保持するために http://java.sun.com/javase/6/docs/api/javax/xml/bind/JAXBElement.html[JAXBElement] を使用しているため、jaxbDataformat はデフォルトで JAXBElement を無視し、アンマーシャリングされたメッセージボディの JAXBElement オブジェクトの代わりに要素のインスタンス値が得られる。 +
+もしアンマーシャリングされたメッセージボディの JAXBElement オブジェクトを取得したい場合は、JaxbDataFormat オブジェクトの ignoreJAXBElement プロパティを false に設定すること。
+
+### エンコーディングの設定
+
+マーシャリング時に *encoding* オプションが設定できる。JAXB マーシャラーの `Marshaller.JAXB_ENCODING` エンコーディングプロパティである。+
+JAXB データフォーマットを宣言するときにどのエンコーディングを使用するかを設定できる。また、Exchange のプロパティである `Exchange.CHARSET_NAME` でエンコーディングを指定することができる。このプロパティは JAXB データフォーマット上に設定されているエンコーディングを上書きする。
+
+この Spring DSL では、エンコーディングとして `iso-8859-1` を使用するように定義している:
+
+### 名前空間プレフィックスのマッピングを制御する
+
+*Camel 2.11 で利用可能*
+
+<<jaxb-dataformat,JAXB>> または <<jaxb-dataformat,SOAP>> を使用してマーシャリングする際に、JAXB の実装は ns2、ns3、ns4 といったように自動的に名前空間プレフィックスを割り当てる。このマッピングを制御するために、Camel は望ましいマッピングを保持するマップを参照することができる。
+
+マッピングの機能は、JAXB の実装とは独立しているため、クラスパス上に JAXB-RI 2.1 もしくは（SUN から提供されている）それより新しい実装が必要である。
+
+例えば Spring XML でマッピングのマップを定義する。下記のマッピングファイルでは、SOAP は soap をプレフィックスとして使用する。一方でカスタムの名前空間である "http://www.mycompany.com/foo/2" はプレフィックスは使用しない。
+
+[source,xml]
+-----------------------------------------------------------------------
+  <util:map id="myMap">
+    <entry key="http://www.w3.org/2003/05/soap-envelope" value="soap"/>
+    <!-- 自分の名前空間に大使邸はプレフィックスは使用しない -->
+    <entry key="http://www.mycompany.com/foo/2" value=""/>
+  </util:map>
+-----------------------------------------------------------------------
+
+マップを参照する <<jaxb-dataformat,JAXB>> もしくは <<jaxb-dataformat,SOAP>> で、これを使用するには
+下記に示すように `namespacePrefixRef` 属性を使用する。Camel は上記の ID "myMap" で定義した `java.util.Map` をレジストリ内で検索する。
+
+[source,xml]
+----------------------------------------------------------------------------------------
+  <marshal>
+    <soapjaxb version="1.2" contextPath="com.mycompany.foo" namespacePrefixRef="myMap"/>
+  </marshal>
+----------------------------------------------------------------------------------------
+
+### スキーマバリデーション
+
+*Camel 2.11 で利用可能*
+
+JAXB データフォーマットは XML に対するマーシャリング、アンマーシャリングによるバリデーションをサポートしている。
+リソースをどのように解決するかを指定するために *classpath:*、*file:* もしくは *http:* のプレフィックスが使用できる。
+*','* 文字を使って複数のスキーマファイルを分離できる。
+
+*既知の問題*
+
+Camel 2.11.0 と 2.11.1 は並列で複数の `Exchange` でバリデーションを実行する際に問題がある。
+https://issues.apache.org/jira/browse/CAMEL-6630[CAMEL-6630] を参照のこと。
+この問題は Camel 2.11.2/2.12.0 で修正されている。
+
+Java DSL を使用して、次のように設定できる:
+
+[source,java]
+-----------------------------------------------------------------------
+JaxbDataFormat jaxbDataFormat = new JaxbDataFormat();
+jaxbDataFormat.setContextPath(Person.class.getPackage().getName());
+jaxbDataFormat.setSchema("classpath:person.xsd,classpath:address.xsd");
+-----------------------------------------------------------------------
+
+同様に XML DSL では次のように設定できる:
+
+[source,xml]
+-------------------------------------------------------------------------
+<marshal>
+    <jaxb id="jaxb" schema="classpath:person.xsd,classpath:address.xsd"/>
+</marshal>
+-------------------------------------------------------------------------
+
+Camel は `SchemaFactory` インスタンスを、その場で作成してプールする。
+なぜなら、JDK に同梱されている `SchemaFactory` はスレッドセーフではないからである。 +
+しかし、スレッドセーフな `SchemaFactory` 実装を持っている場合は、それを使用するように JAXB データフォーマットを設定することができる:
+
+[source,java]
+--------------------------------------------------------
+JaxbDataFormat jaxbDataFormat = new JaxbDataFormat();
+jaxbDataFormat.setSchemaFactory(thradSafeSchemaFactory);
+--------------------------------------------------------
+
+### スキーマの場所
+
+*Camel 2.14 で利用可能*
+
+JAXB データフォーマットは、XML をマーシャリングする際に SchemaLocation を指定することができる。
+
+Java DSL を使用して、次のように設定できる:
+
+[source,java]
+-------------------------------------------------------------------
+JaxbDataFormat jaxbDataFormat = new JaxbDataFormat();
+jaxbDataFormat.setContextPath(Person.class.getPackage().getName());
+jaxbDataFormat.setSchemaLocation("schema/person.xsd");
+-------------------------------------------------------------------
+
+XML DSL を使用して、同様に設定できる:
+
+[source,xml]
+--------------------------------------------------------
+<marshal>
+    <jaxb id="jaxb" schemaLocation="schema/person.xsd"/>
+</marshal>
+--------------------------------------------------------
+
+### すでに XML であるマーシャリングデータ
+
+*Camel 2.14.1 で利用可能*
+
+JAXB マーシャラーはメッセージボディが JAXB 互換であることを要求する。たとえば JAXBElement や JAXB アノテーションや JAXBElement を継承している Java インスタンスである。メッセージボディが、すでに String 型の XML であるような場合がある。新規のオプションである `mustBeJAXBElement` を false に設定して、JAXB マーシャラーが JAXBElements(javax.xml.bind.JAXBIntrospector#isElement が true を返却する) のみをマーシャリングしようとするチェックを緩和することができる。
+また、そのような場合には、マーシャラーはメッセージボディをそのままマーシャリングするために機能制限されて動作する。
+
+### 依存性
+
+Camel のルートで JAXB を使用するためには、データフォーマットを実装した *camel-jaxb* 依存性を追加する必要がある。
+
+Maven を使用している場合は、pom.xml に次の依存性を追加する。 バージョン番号は最新で一番最近のリリースに置き換えること （最新バージョンについてはダウンロードページを参照すること）。
+
+[source,java]
+-------------------------------------
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-jaxb</artifactId>
+  <version>x.x.x</version>
+</dependency>
+-------------------------------------
