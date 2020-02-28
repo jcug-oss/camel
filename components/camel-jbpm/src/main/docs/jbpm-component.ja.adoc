@@ -1,0 +1,557 @@
+[[jbpm-component]]
+////
+= JBPM Component
+////
+= JBPM コンポーネント
+
+////
+*Since Camel 2.6*
+////
+*Camel version 2.6 から利用可能*
+
+// HEADER START
+////
+*Both producer and consumer is supported*
+////
+*プロデューサとコンシューマがサポートされている*
+// HEADER END
+
+////
+The JBPM component provides integration with Business Process
+Management http://www.jbpm.org/[jBPM]. It uses
+kie-server-client API to interact with jBPM instance over REST. The
+component supports both producer and consumer.
+////
+*jbpm* コンポーネントはビジネスプロセス管理 http://www.jbpm.org/[jBPM] との統合を提供する。
+jBPM は REST で jBPM インスタンスと通信するために kie サーバクライアント API を使用する。
+本コンポーネントは、プロデューサとコンシューマ両方をサポートしている。
+
+////
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+////
+Maven を使用している場合は、このコンポーネントのために次の依存性を pom.xml に追加する必要がある:
+
+[source,xml]
+------------------------------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jbpm</artifactId>
+    <version>x.x.x</version><!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+------------------------------------------------------------------------------------
+
+////
+== Consumer
+////
+== コンシューマ
+
+////
+jBPM Consumer allows to attach routes to 
+////
+jBPM コンシューマはルートに以下を添付することを許可している。
+
+////
+* ProcessEventListeners
+* TaskEventListners
+* CaseEventListeners
+////
+* プロセスイベントリスナ
+* タスクイベントリスナ
+* ケースイベントリスナ
+
+////
+== URI format
+////
+== URI 書式
+
+[source,java]
+---------------------------------------------
+jbpm::events:type:[classifier][?options]
+---------------------------------------------
+
+////
+=== Path Parameters (3 parameters):
+////
+=== パス パラメータ (3 個):
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *events* | Classifier for the consumer to know which type of data it should attach to |  | URL
+| *type* | Type of event listener - supports: process, task, case |  | String
+| *classifier* | Used to distinguish routes for same event type|  | String
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *events* | コンシューマが、どのデータ型が添付されるべきかを知るための分類子。 |  | URL
+| *type* | イベントリスナの型。プロセス、タスク、ケースをサポートしている。 |  | String
+| *classifier* | 同一のイベント型のルートを区別するために使用される。 |  | String
+|===
+
+////
+Each route would then receive events when they are being produced by jBPM engine.
+////
+イベントが jBPM エンジンで生成された際に、それぞれのルートはイベントを受信する。
+
+////
+Routes can be defined either in global way - on application level or deployed 
+together with business assets projects also knows as KJARs.
+////
+ルートは、アプリケーションレベルでのグローバルな方法か、もしくは KJAR として知られるビジネスアセットプロジェクトと共にデプロイされる方法かのどちらかで定義される。
+
+////
+Consumers are configured via KieServerExtension that is a pluggable interface to enhance
+jBPM with additional capabilities. It reacts to different life cycle phases of the KIE Server
+and by that is able to configure individual endpoints properly.
+////
+コンシューマは KieServerExtension を介して設定される。KieServerExtension は jBPM に機能を追加するためのプラガブルなインターフェイスである。
+KieServerExtension は KIE サーバの異なるライフサイクルフェーズに反応するため、個々のエンドポイントを適切に設定することが可能となる。
+
+////
+== KJAR routes
+////
+== KJAR ルート
+
+////
+Create file named `camel-routes.xml` in the root folder of your KJAR (src/main/resources) so it will be automatically 
+discovered and Camel Context for given KJAR will be created.
+////
+`camel-routes.xml` という名前のファイルを KJAR (src/main/resources) のルートフォルダに作成する。
+これにより、ファイルは自動で発見されて、KJAR のための Camel コンテキストが生成される。
+
+////
+== Global routes
+////
+== グローバルルート
+
+////
+Create file name `global-camel-routes` in the root of the class path of KIE Server. It will be automatically found and registered
+on every KJAR deployed to KIE Server.
+////
+`global-camel-routes` という名前のファイルを KIE サーバのクラスパスのルートに作成する。
+ファイルは自動で発見されて KIE サーバにデプロイされるすべての KJAR に登録される。
+
+////
+Example camel-routes.xml file that can be placed in the KJAR
+////
+KJAR 内に置かれる camel-routes.xml ファイルの例は、以下の通りである。
+
+[source, xml]
+----
+<routes xmlns="http://camel.apache.org/schema/spring">
+
+    <route id="processes">
+        <from uri="jbpm:events:process:test"/>
+        <filter>
+          <simple>${in.header.EventType} == 'beforeProcessStarted'</simple>
+          <to uri="log:kjar.processes?level=INFO&amp;showBody=true&amp;showHeaders=true"/>
+        </filter>
+    </route>
+
+    <route id="tasks">
+        <from uri="jbpm:events:task:test"/>
+        <filter>
+          <simple>${in.header.EventType} starts with 'before'</simple>
+          <to uri="log:kjar.tasks?level=INFO&amp;showBody=true&amp;showHeaders=true"/>
+        </filter>
+    </route>
+</routes>
+----
+
+
+////
+== Use of jBPM Component in KIE Server
+////
+== KIE サーバ内の jBPM コンポーネントの利用
+
+////
+To make use of camel-jbpm component in a KIE Server it is as simple as just adding two jars into KIE Server application
+////
+KIE サーバ内で camel-jbpm コンポーネントを利用するためには、KIE サーバアプリケーションに対して 2 つの jar を追加するだけである。
+
+* camel-core
+* camel-jbpm
+
+////
+then start KIE Server and you will see once booted following information in logs
+////
+その後 KIE サーバを起動すると、ログに次の情報が出力される。
+
+[source, plain]
+----
+Camel KIE Server extension has been successfully registered as server extension
+....
+
+Route: tasks started and consuming from: jbpm://events:task:test?deploymentId=form-rendering_1.0.0
+Total 2 routes, of which 2 are started
+Apache Camel 2.23.0-SNAPSHOT (CamelContext: KIE Server Camel context for container evaluation_1.0.0) started in 0.378 seconds
+o.k.server.services.impl.KieServerImpl   : Container evaluation_1.0.0 (for release id evaluation:evaluation:1.0.0) successfully started
+----
+
+////
+To make use of jBPM Consumer jBPM deployment descriptor must also define camel specific event listeners of following types
+////
+jBPM コンシューマを利用するために jBPM デプロイメント記述子が、次の Camel 特有のイベントリスナ型を定義しておかなければならない。
+
+* `new org.apache.camel.component.jbpm.listeners.CamelProcessEventListener()`
+* `new org.apache.camel.component.jbpm.listeners.CamelTaskEventListener()`
+* `new org.apache.camel.component.jbpm.listeners.CamelCaseEventListener()`
+
+////
+These must be set in either server level of kjar deployment descriptor (use MVEL as resolver type) - see jbpm docs for more details about
+deployment descriptors.
+////
+これらは、(リゾルバ型として MVEL を使用した) kjar デプロイメント記述子のサーバレベルで設定されなければならない。
+デプロイメント記述子についてのより詳細については、jbpm ドキュメントを参照のこと。
+
+////
+== Producer
+////
+== プロデューサ
+
+////
+Producer is dedicated to interact with jBPM via kie-server-client that uses exposed REST api of 
+jBPM (KIE Server).
+////
+プロデューサは、jBPM (KIE サーバ) が公開している REST API を使用した kie-server-client を介して jBPM とやり取りを行う。
+
+////
+== URI format
+////
+== URI 書式
+
+[source,java]
+---------------------------------------------
+jbpm::hostName[:port][/resourceUri][?options]
+---------------------------------------------
+
+////
+== URI Options
+////
+== URI オプション
+
+
+// component options: START
+////
+The JBPM component supports 3 options, which are listed below.
+////
+JBPM コンポーネントは以下の 3 つのオプションを持つ。
+
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *basicPropertyBinding* (advanced) | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *basicPropertyBinding* (上級者向け) | コンポーネントが基本的なプロパティバインディング(Camel 2.x)を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *lazyStartProducer* (プロデューサ) | (最初のメッセージで)遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *bridgeErrorHandler* (コンシューマ) | コンシューマから Camel エラーハンドラへ橋渡しすることを許可する。コンシューマが入力のメッセージを扱っている際に発生する、どのような例外もエラーハンドラによってメッセージとして処理されることを意味する。デフォルトではコンシューマは例外を扱うために org.apache.camel.spi.ExceptionHandler を使用し、 WARN か ERROR でログに残り無視される。 | false | boolean
+|===
+// component options: END
+
+
+
+
+// endpoint options: START
+////
+The JBPM endpoint is configured using URI syntax:
+////
+JBPM エンドポイントは URI シンタックスを使用して設定される:
+
+----
+jbpm:connectionURL
+----
+
+////
+with the following path and query parameters:
+////
+次のパスとクエリパラメータで設定される:
+
+////
+=== Path Parameters (2 parameters):
+////
+==== パスパラメータ (2 個):
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *connectionURL* | *Required* The URL to the jBPM server. |  | URL
+| *eventListenerType* | Sets the event listener type to attach to |  | String
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *connectionURL* | *必須* jBPM サーバの URL。 |  | URL
+| *eventListenerType* | 添付するためのイベントリスナ型を設定する。 |  | String
+|===
+
+
+////
+=== Query Parameters (32 parameters):
+////
+==== クエリパラメータ (32 個):
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *attachmentId* (common) | attachId to use when retrieving attachments |  | Long
+| *contentId* (common) | contentId to use when retrieving attachments |  | Long
+| *deploymentId* (common) | *Required* The id of the deployment |  | String
+| *emitterSendItems* (common) | Sets if event produced by emitter should be sent as single items or complete collection |  | Boolean
+| *event* (common) | the data associated with this event when signalEvent operation is performed |  | Object
+| *eventType* (common) | the type of event to use when signalEvent operation is performed |  | String
+| *identifier* (common) | identifier the global identifier |  | String
+| *maxNumber* (common) | the maximum number of rules that should be fired |  | Integer
+| *page* (common) | The page to use when retrieving user tasks |  | Integer
+| *pageSize* (common) | The page size to use when retrieving user tasks |  | Integer
+| *processId* (common) | the id of the process that should be acted upon |  | String
+| *processInstanceId* (common) | the id of the process instance |  | Long
+| *targetUserId* (common) | The targetUserId used when delegating a task |  | String
+| *task* (common) | The task instance to use with task operations |  | Task
+| *taskId* (common) | the id of the task |  | Long
+| *timeout* (common) | A timeout value |  | Integer
+| *userId* (common) | userId to use with task operations |  | String
+| *value* (common) | the value to assign to the global identifier |  | Object
+| *workItemId* (common) | the id of the work item |  | Long
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+| *exceptionHandler* (consumer) | To let the consumer use a custom ExceptionHandler. Notice if the option bridgeErrorHandler is enabled then this option is not in use. By default the consumer will deal with exceptions, that will be logged at WARN or ERROR level and ignored. |  | ExceptionHandler
+| *exchangePattern* (consumer) | Sets the exchange pattern when the consumer creates an exchange. |  | ExchangePattern
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *operation* (producer) | The operation to perform | startProcess | String
+| *basicPropertyBinding* (advanced) | Whether the endpoint should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *entities* (advanced) | The potentialOwners when nominateTask operation is performed |  | List
+| *extraJaxbClasses* (advanced) | To load additional classes when working with XML |  | Class[]
+| *parameters* (advanced) | the variables that should be set for various operations |  | Map
+| *synchronous* (advanced) | Sets whether synchronous processing should be strictly used, or Camel is allowed to use asynchronous processing (if supported). | false | boolean
+| *statuses* (filter) | The list of status to use when filtering tasks |  | List
+| *password* (security) | Password for authentication |  | String
+| *userName* (security) | Username for authentication |  | String
+|===
+////
+
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *attachmentId* (共通) | 添付物を取得する際に使用する attachId。 |  | Long
+| *contentId* (共通) | 添付物を取得する際に使用する contentId。 |  | Long
+| *deploymentId* (共通) | *必須* デプロイの ID。 |  | String
+| *emitterSendItems* (共通) | エミッタにより生成されたイベントが単一のアイテムもしくはコレクションとして送信される場合にセットされる。 |  | Boolean
+| *event* (共通) | signalEvent オペレーションが実行されるときに、そのイベントに関連づけられたデータ。 |  | Object
+| *eventType* (共通) | シグナルイベントが実行されたときに使用するイベント型。 |  | String
+| *identifier* (共通) | グローバル識別子。 |  | String
+| *maxNumber* (共通) | 実行されるルールの最大数。 |  | Integer
+| *page* (共通) | ユーザタスクを取得するときに使用するページ。 |  | Integer
+| *pageSize* (共通) | ユーザタスクを取得するときに使用するページサイズ。 |  | Integer
+| *processId* (共通) | 実行されるプロセスの ID。 |  | String
+| *processInstanceId* (共通) | プロセスインスタンスの ID。 |  | Long
+| *targetUserId* (共通) | タスクを委譲するときに使用される targetUserId。 |  | String
+| *task* (共通) | タスクの実行で使用するタスクインスタンス。 |  | Task
+| *taskId* (共通) | タスクの ID。 |  | Long
+| *timeout* (共通) | タイムアウト値。 |  | Integer
+| *userId* (共通) | タスクオペレーションで使用する userId。 |  | String
+| *value* (共通) | グローバル識別子に割り当てる値。 |  | Object
+| *workItemId* (共通) | ワークアイテムの ID。 |  | Long
+| *bridgeErrorHandler* (コンシューマ) | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようととして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | boolean
+| *exceptionHandler* (コンシューマ) | コンシューマにカスタムの例外ハンドラを使用させる。オペレーションで bridgeErrorHandler が有効になっている場合は使用されないことに注意すること。デフォルトではコンシューマは例外を処理し WARN もしくは ERROR レベルでログ出力され、無視される。 |  | ExceptionHandler
+| *exchangePattern* (コンシューマ) | コンシューマが exchange を生成したときに設定する exchange パターン。 |  | ExchangePattern
+| *lazyStartProducer* (プロデューサ) | (最初のメッセージで)遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *operation* (プロデューサ) | 実行されるオペレーション。 | startProcess | String
+| *basicPropertyBinding* (上級者向け) | エンドポイントが基本的なプロパティバインディング(Camel 2.x)を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *entities* (上級者向け) | nominateTask が実行されるときの potentialOwners。 |  | List
+| *extraJaxbClasses* (上級者向け) | XML と動作する際にロードする追加のクラス。 |  | Class[]
+| *parameters* (上級者向け) | 様々なオペレーションのためにセットされる変数。 |  | Map
+| *synchronous* (上級者向け) | 厳密に同期処理が使われるか否かを設定する。(サポートしている場合は)Camel は非同期処理を使用することを許可される。 | false | boolean
+| *statuses* (フィルタ) | タスクのフィルタリング時に使用するステータスのリスト。 |  | List
+| *password* (セキュリティ) | 認証のためのパスワード。 |  | String
+| *userName* (セキュリティ) | 認証のためのユーザ名。 |  | String
+|===
+// endpoint options: END
+// spring-boot-auto-configure options: START
+=== Spring Boot Auto-Configuration
+
+////
+When using Spring Boot make sure to use the following Maven dependency to have support for auto configuration:
+////
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-jbpm-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----
+
+
+////
+The component supports 4 options, which are listed below.
+////
+コンポーネントは以下のリストにある 4 つのオプションをサポートしている。
+
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *camel.component.jbpm.basic-property-binding* | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | Boolean
+| *camel.component.jbpm.bridge-error-handler* | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | Boolean
+| *camel.component.jbpm.enabled* | Whether to enable auto configuration of the jbpm component. This is enabled by default. |  | Boolean
+| *camel.component.jbpm.lazy-start-producer* | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | Boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *camel.component.jbpm.basic-property-binding* | コンポーネントが基本的なプロパティバインディング(Camel 2.x)を使用するか付加的な機能を使用するより新しいプロパティバインディングを使用するかを指定する。 | false | Boolean
+| *camel.component.jbpm.bridge-error-handler* | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようととして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | Boolean
+| *camel.component.jbpm.enabled* | jbpm コンポーネントの auto configuration を可能にするように指定する。デフォルトで enabled になっている。 |  | Boolean
+| *camel.component.jbpm.lazy-start-producer* | (最初のメッセージで)遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | Boolean
+|===
+// spring-boot-auto-configure options: END
+
+
+
+
+////
+== Message Headers
+////
+== メッセージヘッダ
+
+////
+[width="100%",cols="10%,10%,10%,70%",options="header",]
+|=======================================================================
+|Name |Default Value |Type |Description
+
+|CamelJBPMValue |null |Object |the value to assign to the global identifier
+
+|CamelJBPMOperation |PUT |String |The operation to perform. The operation name must be prefixed with
+CamelJBPMOperation and the name of the operation. See the full list
+above. It is case insensitive.
+
+|CamelJBPMProcessId |null |String |the id of the process that should be acted upon
+
+|CamelJBPMProcessInstanceId |0 |Long |the id of the process instance
+
+|CamelJBPMParameters |null |Map<String, Object> |the variables that should be set for various operations
+
+|CamelJBPMEventType |null |String |the type of event to use when signalEvent operation is performed
+
+|CamelJBPMEvent |null |String |The type of the received event. Possible values defined here
+org.infinispan.notifications.cachelistener.event.Event.Type
+
+|CamelJBPMMaxNumber |null |Integer |the maximum number of rules that should be fired
+
+|CamelJBPMIdentifier |null |long |identifier the global identifier
+
+|CamelJBPMWorkItemId |0 |Long |the id of the work item
+
+|CamelJBPMTaskId |0 |Long |the id of the task
+
+|CamelJBPMTask |null |Task |The task instance to use with task operations
+
+|CamelJBPMUserId |null |String |userId to use with task operations
+
+|CamelJBPMTargetUserId |null |String |The targetUserId used when delegating a task
+
+|CamelJBPMLanguage |null |String |The language to use when filtering user tasks
+
+|CamelJBPMAttachmentId |0 |Long |attachId to use when retrieving attachments
+
+|CamelJBPMContentId |0 |Long |contentId to use when retrieving attachments
+
+|CamelJBPMEntityList |null |List<String> |The potentialOwners when nominateTask operation is performed
+
+|CamelJBPMStatusList |null |List<String> |The list of status to use when filtering tasks
+|=======================================================================
+////
+
+[width="100%",cols="10%,10%,10%,70%",options="header",]
+|===
+| 名前 | デフォルト値 | 型 | 説明
+
+| CamelJBPMValue | null | Object | グローバル識別子に割り当てる値。
+
+| CamelJBPMOperation | PUT | String | 実行するオペレーション。オペレーションのプレフィックスは CamelJBPMOperation で、かつオペレーション名でなければならない。上記の一覧を参照のこと。大文字小文字は区別しない。
+
+| CamelJBPMProcessId | null | String | 実行されるプロセスの ID。
+
+| CamelJBPMProcessInstanceId | 0 | Long | プロセスインスタンスの ID。
+
+| CamelJBPMParameters | null | Map<String, Object> | 様々なオペレーションのためにセットされる変数。
+
+| CamelJBPMEventType | null | String | signalEvent オペレーションが実行されるときに使用するためのイベント型。
+
+|CamelJBPMEvent |null |String |受信されたイベントの型。ここで定義された取り得る値は、org.infinispan.notifications.cachelistener.event.Event.Type である。
+
+|CamelJBPMMaxNumber |null |Integer |実行されるルールの最大数。
+
+|CamelJBPMIdentifier |null |long |グローバル識別子の ID。
+
+|CamelJBPMWorkItemId |0 |Long |ワークアイテムの ID。
+
+|CamelJBPMTaskId |0 |Long |タスクの ID。
+
+|CamelJBPMTask |null |Task |タスク実行と共に使用するタスクのインスタンス。
+
+|CamelJBPMUserId |null |String |タスクオペレーションで使用する userId。
+
+|CamelJBPMTargetUserId |null |String |タスクをデリゲートするときに使用される targetUserId。
+
+|CamelJBPMLanguage |null |String |ユーザタスクをフィルタリングする際に使用する言語。
+
+|CamelJBPMAttachmentId |0 |Long |添付物を取得する際に使用する attachId。
+
+|CamelJBPMContentId |0 |Long |添付物を取得する際に使用する contentId。
+
+|CamelJBPMEntityList |null |List<String> |nominateTask が実行されるときの potentialOwner。
+
+|CamelJBPMStatusList |null |List<String> |タスクのフィルタリング時に使用するステータスのリスト。
+|===
+
+////
+== Example
+////
+== 例
+
+////
+Below is an example route that starts a business process with id
+evaluation. To run this example you need jBPM to run locally, easiest is to use single zip 
+distribution - downloaded from jbpm.org. Next, start it and import Evaluation sample project, build and deploy.
+Once done this test can be ran out of the box.
+////
+以下の例は、ID 評価を行い、ビジネスプロセスを開始するルートである。この例を実行するには、jBPM をローカルで実行する必要がある。
+最も簡単な方法としては jbpm.org からダウンロードできる zipを使用することである (1 つの zip で配布されている)。
+次に開始して評価サンプルプロジェクトをインポートし、ビルドしてデプロイする。
+一度行うと、このテストはそのまま実行可能である。
+
+[source,java]
+----------------------------------------------------------------------------------------------
+Map<String, Object> params = new HashMap<>();
+params.put("employee", "wbadmin");
+params.put("reason", "Camel asks for it");
+
+from("direct:start")
+        .setHeader(JBPMConstants.PROCESS_ID, constant("evaluation"))
+        .setHeader((JBPMConstants.PARAMETERS, params))
+        .to("jbpm:http://localhost:8080/kie-server/services/rest/server?userName=wbadmin&password=wbadmin
+        &deploymentId=evaluation");
+----------------------------------------------------------------------------------------------
