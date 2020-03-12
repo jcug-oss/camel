@@ -1,0 +1,647 @@
+[[jclouds-component]]
+////
+= JClouds Component
+////
+= JClouds コンポーネント
+
+////
+*Since Camel 2.9*
+////
+*Camel 2.9 より利用可能*
+
+// HEADER START
+////
+*Both producer and consumer is supported*
+////
+*プロデューサとコンシューマがサポートされている*
+// HEADER END
+
+////
+This component allows interaction with cloud provider key-value engines
+(blobstores) and compute services. The component uses
+http://code.google.com/p/jclouds[jclouds] which is +
+ a library that provides abstractions for blobstores and compute
+services.
+////
+本コンポーネントはクラウドプロバイダの key-value エンジン（blobstore）とサービスとの接続を行う。
+コンポーネントは blobstore とサービスの抽象化を提供する http://code.google.com/p/jclouds[jclouds] ライブラリを用いる。
+
+////
+*ComputeService* simplifies the task of managing machines in the cloud.
+For example, you can use ComputeService to start 5 machines and install
+your software on them. +
+ *BlobStore* simplifies dealing with key-value providers such as Amazon
+S3. For example, BlobStore can give you a simple Map view of a
+container.
+////
+*ComputeService* はクラウド内のマシンを管理するタスクを簡単にする。
+たとえば、5 つのマシンを起動してソフトウェアをインストールするために ComputeService を使用できる。
+*BlobStore* は Amazon S3 のような key-value プロバイダを扱う。
+たとえば、BlobStore はコンテナの単純なマップビューを取得できる。
+
+////
+The camel jclouds component allows you to use both abstractions, as it
+specifes two types of endpoint the JcloudsBlobStoreEndpoint and the
+JcloudsComputeEndpoint. You can have both producers and consumers on a
+blobstore endpoint but you can only have producers on compute endpoints.
+////
+Camel jclouds コンポーネントは、JcloudsBlobStoreEndpoint と JcloudsComputeEndpoint の 2 つの型を指定しているため
+両方を抽象化したものを扱うことができる。blobstore エンドポイントのプロデューサとコンシューマの両方が取得できるが
+compute エンドポイントについてはプロデューサのみ取得できる。
+
+////
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+////
+Maven を使用している場合は、このコンポーネントのために次の依存性を pom.xml に追加する必要がある:
+
+////
+[source,xml]
+------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jclouds</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+------------------------------------------------------------
+////
+[source,xml]
+------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jclouds</artifactId>
+    <version>x.x.x</version>
+    <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+------------------------------------------------------------
+
+////
+== Configuring the component
+////
+== コンポーネントの設定
+
+////
+The camel jclouds component will make use of multiple jclouds blobstores
+and compute services as long as they are passed to the component during
+initialization. The component accepts a list blobstores and compute
+services. Here is how it can be configured.
+////
+Camel jclouds コンポーネントは、初期化時に渡された数だけ複数の jclouds blobstore と compute サービスを利用できる。
+コンポーネントは blobstore と compute サービスのリストを受け入れる。設定の仕方を以下に示す。
+
+
+
+[source,xml]
+----------------------------------------------------------------------------------------------------------------
+    <bean id="jclouds" class="org.apache.camel.component.jclouds.JcloudsComponent">
+        <property name="computeServices">
+            <list>
+                <ref bean="computeService"/>
+            </list>
+        </property>
+        <property name="blobStores">
+            <list>
+                <ref bean="blobStore"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Creating a blobstore from spring / blueprint xml -->
+    <bean id="blobStoreContextFactory" class="org.jclouds.blobstore.BlobStoreContextFactory"/>
+
+    <bean id="blobStoreContext" factory-bean="blobStoreContextFactory" factory-method="createContext">
+        <constructor-arg name="provider" value="PROVIDER_NAME"/>
+        <constructor-arg name="identity"  value="IDENTITY"/>
+        <constructor-arg name="credential" value="CREDENTIAL"/>
+    </bean>
+
+    <bean id="blobStore" factory-bean="blobStoreContext" factory-method="getBlobStore"/>
+
+    <!-- Creating a compute service from spring / blueprint xml -->
+    <bean id="computeServiceContextFactory" class="org.jclouds.compute.ComputeServiceContextFactory"/>
+
+    <bean id="computeServiceContext" factory-bean="computeServiceContextFactory" factory-method="createContext">
+        <constructor-arg name="provider" value="PROVIDER_NAME"/>
+        <constructor-arg name="identity"  value="IDENTITY"/>
+        <constructor-arg name="credential" value="CREDENTIAL"/>
+    </bean>
+
+    <bean id="computeService" factory-bean="computeServiceContext" factory-method="getComputeService"/>
+----------------------------------------------------------------------------------------------------------------
+
+////
+As you can see the component is capable of handling multiple blobstores
+and compute services. The actual implementation that will be used by
+each endpoint is specified by passing the provider inside the URI.
+////
+コンポーネントが複数の blobstore と compute サービスを扱うことができるのが分かる。
+それぞれのエンドポイントで使われている実際の実装は、URI 内のプロバイダを渡すことで指定される。
+
+////
+== Jclouds Options
+////
+== Jclouds オプション
+
+[source,java]
+-----------------------------------------
+jclouds:blobstore:[provider id][?options]
+jclouds:compute:[provider id][?options]
+-----------------------------------------
+
+////
+The *provider id* is the name of the cloud provider that provides the
+target service (_e.g. aws-s3 or aws_ec2_).
+////
+*provider id* は（_例 aws-s3 や aws_ec2_ といった）対象のサービスを提供するクラウドプロバイダの名前である。
+
+////
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+////
+次の書式で URI にクエリオプションを追加できる。
+`?option=value&option=value&...`
+
+////
+== Blobstore URI Options
+////
+== Blobstore URI オプション
+
+
+
+
+// component options: START
+////
+The JClouds component supports 5 options, which are listed below.
+////
+JClouds コンポーネントは、以下の 5 つのオプションを持つ。
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *blobStores* (common) | To use the given BlobStore which must be configured when using blobstore. |  | List
+| *computeServices* (common) | To use the given ComputeService which must be configured when use compute. |  | List
+| *basicPropertyBinding* (advanced) | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *blobStores* （共通） | blobstore を使用する際に設定しなくてはならない BlobStore。 |  | List
+| *computeServices* （共通） | compute を使用する際に設定しなくてはならない ComputeService。 |  | List
+| *basicPropertyBinding* （上級者向け） | エンドポイントが基本的なプロパティバインディング（Camel 2.x）を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *lazyStartProducer* （プロデューサ） | （最初のメッセージで）遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *bridgeErrorHandler* （コンシューマ） | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようととして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | boolean
+|===
+
+// component options: END
+
+
+
+
+
+
+// endpoint options: START
+////
+The JClouds endpoint is configured using URI syntax:
+////
+JClouds エンドポイントは URI シンタックスを用いて設定される。
+
+----
+jclouds:command:providerId
+----
+
+////
+with the following path and query parameters:
+////
+次のパスおよびクエリパラメータを伴う:
+
+////
+=== Path Parameters (2 parameters):
+////
+=== パスパラメータ （2 個）:
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *command* | *Required* What command to execute such as blobstore or compute. |  | JcloudsCommand
+| *providerId* | *Required* The name of the cloud provider that provides the target service (e.g. aws-s3 or aws_ec2). |  | String
+|===
+////
+
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *command* | *必須* blobstore もしくは compute のような何のコマンドを実行するかを指定する。 |  | JcloudsCommand
+| *providerId* | *必須* 対象のサービスを提供するクラウドプロバイダ（例 aws-s3 もしくは aws_ec2）の名前を指定する。 |  | String
+|===
+
+
+////
+=== Query Parameters (17 parameters):
+////
+=== クエリパラメータ （17 個）:
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+| *exceptionHandler* (consumer) | To let the consumer use a custom ExceptionHandler. Notice if the option bridgeErrorHandler is enabled then this option is not in use. By default the consumer will deal with exceptions, that will be logged at WARN or ERROR level and ignored. |  | ExceptionHandler
+| *exchangePattern* (consumer) | Sets the exchange pattern when the consumer creates an exchange. |  | ExchangePattern
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *basicPropertyBinding* (advanced) | Whether the endpoint should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *synchronous* (advanced) | Sets whether synchronous processing should be strictly used, or Camel is allowed to use asynchronous processing (if supported). | false | boolean
+| *blobName* (blobstore) | The name of the blob. |  | String
+| *container* (blobstore) | The name of the blob container. |  | String
+| *directory* (blobstore) | An optional directory name to use |  | String
+| *group* (compute) | The group that will be assigned to the newly created node. Values depend on the actual cloud provider. |  | String
+| *hardwareId* (compute) | The hardware that will be used for creating a node. Values depend on the actual cloud provider. |  | String
+| *imageId* (compute) | The imageId that will be used for creating a node. Values depend on the actual cloud provider. |  | String
+| *locationId* (compute) | The location that will be used for creating a node. Values depend on the actual cloud provider. |  | String
+| *nodeId* (compute) | The id of the node that will run the script or destroyed. |  | String
+| *nodeState* (compute) | To filter by node status to only select running nodes etc. |  | String
+| *operation* (compute) | Specifies the type of operation that will be performed to the blobstore. |  | String
+| *user* (compute) | The user on the target node that will run the script. |  | String
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *bridgeErrorHandler* （コンシューマ） | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようととして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | boolean
+| *exceptionHandler* （コンシューマ） | コンシューマにカスタムの例外ハンドラを使用させる。オペレーションで bridgeErrorHandler が有効になっている場合は使用されないことに注意すること。デフォルトではコンシューマは例外を処理し WARN もしくは ERROR レベルでログ出力され、無視される。 |  | ExceptionHandler
+| *exchangePattern* （コンシューマ） | コンシューマが exchange を生成したときに設定する exchange パターン。 |  | ExchangePattern
+| *lazyStartProducer* （プロデューサ） | （最初のメッセージで）遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *basicPropertyBinding* （上級者向け） | エンドポイントが基本的なプロパティバインディング（Camel 2.x）を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *synchronous* （上級者向け） | 厳密に同期処理が使われるか否かを設定する。（サポートしている場合は）Camel は非同期処理を使用することを許可される。 | false | boolean
+| *blobName* （blobstore） | blob の名前。 |  | String
+| *container* （blobstore） | blob コンテナの名前。 |  | String
+| *directory* （blobstore） | 使用するオプショナルのディレクトリ名。 |  | String
+| *group* （compute） | 新規に作成されたノードに割り当てられたグループ。値は実際のクラウドプロバイダに依存する。 |  | String
+| *hardwareId* （compute） | ノードの作成のために使用されるハードウェア。値は実際のクラウドプロバイダに依存する。 |  | String
+| *imageId* （compute） | ノード作成のために使用されるイメージ ID。値は実際のクラウドプロバイダに依存する。 |  | String
+| *locationId* （compute） | ノード作成のために使用されるロケーション。値は実際のクラウドプロバイダに依存する。 |  | String
+| *nodeId* （compute） | スクリプトを実行する、もしくは破棄するノードのID。 |  | String
+| *nodeState* （compute） | ノード状態のフィルタする。起動中のノードを選択するなどのために使用する。 |  | String
+| *operation* （compute） | blobstore で実行されるオペレーションの型を指定する。 |  | String
+| *user* （compute） | スクリプトを実行する対象のノードにおけるユーザを指定する。 |  | String
+|===
+
+// endpoint options: END
+
+
+////
+You can have as many of these options as you like.
+////
+好きな数だけのオプションを含めることができる。
+
+[source,java]
+------------------------------------------------------------------------------------------
+jclouds:blobstore:aws-s3?operation=CamelJcloudsGet&container=mycontainer&blobName=someblob
+------------------------------------------------------------------------------------------
+
+////
+For producer endpoint you can override all of the above URI options by
+passing the appropriate headers to the message.
+////
+プロデューサエンドポイントで使用するために、メッセージの適切なヘッダに渡すことにより上記 URI オプションすべてを上書きできる。
+
+
+// spring-boot-auto-configure options: START
+== Spring Boot Auto-Configuration
+
+////
+When using Spring Boot make sure to use the following Maven dependency to have support for auto configuration:
+////
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
+
+////
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-jclouds-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- use the same version as your Camel core version -->
+</dependency>
+----
+////
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-jclouds-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----
+
+
+////
+The component supports 6 options, which are listed below.
+////
+コンポーネントは以下のリストにある 6 つのオプションをサポートしている。
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *camel.component.jclouds.basic-property-binding* | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | Boolean
+| *camel.component.jclouds.blob-stores* | To use the given BlobStore which must be configured when using blobstore. |  | List
+| *camel.component.jclouds.bridge-error-handler* | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | Boolean
+| *camel.component.jclouds.compute-services* | To use the given ComputeService which must be configured when use compute. |  | List
+| *camel.component.jclouds.enabled* | Whether to enable auto configuration of the jclouds component. This is enabled by default. |  | Boolean
+| *camel.component.jclouds.lazy-start-producer* | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | Boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *camel.component.jclouds.basic-property-binding* | コンポーネントが基本的なプロパティバインディング（Camel 2.x）を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | Boolean
+| *camel.component.jclouds.blob-stores* | blobstore を使用する際に設定しなくてはならない BlobStore。 |  | List
+| *camel.component.jclouds.bridge-error-handler* | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようととして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | Boolean
+| *camel.component.jclouds.compute-services* | compute を使用する際に設定しなくてはならない ComputeService。 |  | List
+| *camel.component.jclouds.enabled* | jclouds コンポーネントの auto configuration を有効化するか否かを指定する。デフォルトで有効になっている。 |  | Boolean
+| *camel.component.jclouds.lazy-start-producer* | （最初のメッセージで）遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | Boolean
+|===
+
+// spring-boot-auto-configure options: END
+
+
+////
+=== Message Headers for blobstore
+////
+=== blobstore のメッセージヘッダ
+
+
+////
+[width="100%",cols="10%,90%",options="header",]
+|=======================================================================
+|Header |Description
+
+|`CamelJcloudsOperation` |The operation to be performed on the blob. The valid options are
+* PUT
+* GET
+
+|`CamelJcloudsContainer` |The name of the blob container.
+
+|`CamelJcloudsBlobName` |The name of the blob.
+|=======================================================================
+////
+[width="100%",cols="10%,90%",options="header",]
+|=======================================================================
+|ヘッダ |説明
+
+|`CamelJcloudsOperation` |blob 上で実行されるオペレーション。 有効なオプションは以下である。
+* PUT
+* GET
+
+|`CamelJcloudsContainer` |blob コンテナの名前
+
+|`CamelJcloudsBlobName` |blob の名前
+|=======================================================================
+
+
+////
+== Blobstore Usage Samples
+////
+== Blobstore 利用のサンプル
+
+////
+=== Example 1: Putting to the blob
+////
+=== 例 1: blob を PUT する
+
+////
+This example will show you how you can store any message inside a blob
+using the jclouds component.
+////
+この例では jclouds コンポーネントを用いて、メッセージを blob 内に保存できる方法を示している。
+
+[source,java]
+------------------------------------
+from("direct:start")
+    .to("jclouds:blobstore:aws-s3" +
+        "?operation=PUT" +
+        "&container=mycontainer" +
+        "&blobName=myblob");
+------------------------------------
+
+////
+In the above example you can override any of the URI parameters with
+headers on the message. 
+Here is how the above example would look like using xml to define our
+route.
+////
+上記の例では、メッセージのヘッダでどのような URI パラメータでも上書きできる。
+XML を使ってルートを定義すると以下のようになる。
+
+
+[source,xml]
+--------------------------------------------------------------------------------------------
+<route>
+    <from uri="direct:start"/>
+    <to uri="jclouds:blobstore:aws-s3?operation=PUT&container=mycontainer&blobName=myblob"/>
+</route>
+--------------------------------------------------------------------------------------------
+
+////
+=== Example 2: Getting/Reading from a blob
+////
+=== 例 2: blob から取得する/読み込む
+
+////
+This example will show you how you can read the contnet of a blob using
+the jclouds component.
+////
+この例は、jclouds コンポーネントを用いて blob の中身を読み込む方法を示す。
+
+[source,java]
+------------------------------------
+from("direct:start")
+    .to("jclouds:blobstore:aws-s3" +
+        "?operation=GET" +
+        "&container=mycontainer" +
+        "&blobName=myblob");
+------------------------------------
+
+////
+In the above example you can override any of the URI parameters with
+headers on the message. 
+ Here is how the above example would look like using xml to define our
+route.
+////
+上記の例では、メッセージのヘッダでどのような URI パラメータでも上書きできる。
+XML を使ってルートを定義すると以下のようになる。
+
+
+[source,xml]
+--------------------------------------------------------------------------------------------
+<route>
+    <from uri="direct:start"/>
+    <to uri="jclouds:blobstore:aws-s3?operation=PUT&container=mycontainer&blobName=myblob"/>
+</route>
+--------------------------------------------------------------------------------------------
+
+////
+=== Example 3: Consuming a blob
+////
+=== 例 3: blob を処理する
+
+////
+This example will consume all blob that are under the specified
+container. The generated exchange will contain the payload of the blob
+as body.
+////
+この例では、指定したコンテナ配下のすべての blob を処理する。
+生成された exchange はボディに blob のペイロードを含んでいる。
+
+
+[source,java]
+-------------------------------------
+    from("jclouds:blobstore:aws-s3" +
+        "?container=mycontainer")
+        .to("direct:next");
+-------------------------------------
+
+////
+You can achieve the same goal by using xml, as you can see below.
+////
+下記では、同じことを XML を用いて行っている。
+
+[source,xml]
+----------------------------------------------------------------------------------------------
+<route>
+    <from uri="jclouds:blobstore:aws-s3?operation=GET&container=mycontainer&blobName=myblob"/>
+    <to uri="direct:next"/>
+</route>
+----------------------------------------------------------------------------------------------
+
+
+
+[source,java]
+-------------------------------------------------------------------------------------------------------------
+jclouds:compute:aws-ec2?operation=CamelJcloudsCreateNode&imageId=AMI_XXXXX&locationId=eu-west-1&group=mygroup
+-------------------------------------------------------------------------------------------------------------
+
+////
+== Compute Usage Samples
+////
+== Compute 利用のサンプル
+
+////
+Below are some examples that demonstrate the use of jclouds compute
+producer in java dsl and spring/blueprint xml.
+////
+下記は Java DSL と Spring/blueprint XML を用いた jclouds の compute プロデューサのデモである。
+
+////
+=== Example 1: Listing the available images.
+////
+=== 例 1: 利用可能なイメージを一覧にする
+
+[source,java]
+--------------------------------------------
+    from("jclouds:compute:aws-ec2" +
+        "&operation=CamelJCloudsListImages")
+        .to("direct:next");
+--------------------------------------------
+
+////
+This will create a message that will contain the list of images inside
+its body. You can also do the same using xml.
+////
+これは、ボディ内にイメージの一覧を含んだメッセージを作成する。同じことが XML を使ってもできる。
+
+[source,xml]
+--------------------------------------------------------------------------
+<route>
+    <from uri="jclouds:compute:aws-ec2?operation=CamelJCloudsListImages"/>
+    <to uri="direct:next"/>
+</route>
+--------------------------------------------------------------------------
+
+////
+=== Example 2: Create a new node.
+////
+=== 例 2: 新規ノードの作成
+
+[source,java]
+---------------------------------------------
+    from("direct:start").
+    to("jclouds:compute:aws-ec2" +
+        "?operation=CamelJcloudsCreateNode" +
+        "&imageId=AMI_XXXXX" +
+        "&locationId=XXXXX" +
+        "&group=myGroup");
+---------------------------------------------
+
+////
+This will create a new node on the cloud provider. The out message in
+this case will be a set of metadata that contains information about the
+newly created node (e.g. the ip, hostname etc). Here is the same using
+spring xml.
+////
+これはクラウドプロバイダ上で新規にノードを作成する。
+このケースでの出力メッセージは、新規に作成されたノードに関する情報を含んだ（例 IPやホスト名などの）メタ情報である。
+Spring XML を用いて同じものを書くと以下になる。
+
+[source,xml]
+-------------------------------------------------------------------------------------------------------------------------
+<route>
+    <from uri="direct:start"/>
+    <to uri="jclouds:compute:aws-ec2?operation=CamelJcloudsCreateNode&imageId=AMI_XXXXX&locationId=XXXXX&group=myGroup"/>
+</route>
+-------------------------------------------------------------------------------------------------------------------------
+
+////
+=== Example 3: Run a shell script on running node.
+////
+=== 例 3: 起動中のノード上でシェルスクリプトを実行する
+
+[source,java]
+--------------------------------------------
+    from("direct:start").
+    to("jclouds:compute:aws-ec2" +
+        "?operation=CamelJcloudsRunScript" +
+        "?nodeId=10" +
+        "&user=ubuntu");
+--------------------------------------------
+
+////
+The sample above will retrieve the body of the in message, which is
+expected to contain the shell script to be executed. Once the script is
+retrieved, it will be sent to the node for execution under the specified
+user (_in order case ubuntu_). The target node is specified using its
+nodeId. The nodeId can be retrieved either upon the creation of the
+node, it will be part of the resulting metadata or by a executing a
+LIST_NODES operation.
+
+*Note* This will require that the compute service that will be passed to
+the component, to be initialized with the appropriate jclouds ssh
+capable module (_e.g. jsch or sshj_).
+
+Here is the same using spring xml.
+////
+上記のサンプルはメッセージ内のボディを取得し、ボディは実行するシェルスクリプトを含んでいることが期待されている。
+スクリプトが取得されると、特定のユーザ（_このケースでは ubuntu ユーザ_）で実行するためにノードに送信される。
+ターゲットのノードは nodeId を用いて指定される。nodeId はノードの作成時に取得でき、メタデータもしくは LIST_NODES を実行した結果で得られる。
+
+*Note* これはコンポーネントに渡される compute サービスが必要である。その compute サービスは jclouds ssh が可能な（_例 jsch もしくは sshj_）適切なモジュールで初期化される。
+
+Spring XML を用いて同じものを書くと以下になる。
+
+
+[source,xml]
+----------------------------------------------------------------------------------------------
+<route>
+    <from uri="direct:start"/>
+    <to uri="jclouds:compute:aws-ec2?operation=CamelJcloudsListNodes&?nodeId=10&user=ubuntu"/>
+</route>
+----------------------------------------------------------------------------------------------
+
