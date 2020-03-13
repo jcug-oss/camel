@@ -1,0 +1,310 @@
+[[jcr-component]]
+////
+= JCR Component
+////
+= JCR コンポーネント
+
+////
+*Since Camel 1.3*
+////
+*Camel 1.3 より利用可能*
+
+
+// HEADER START
+////
+*Both producer and consumer is supported*
+////
+プロデューサとコンシューマがサポートされている
+// HEADER END
+
+////
+The JCR component allows you to add/read nodes to/from a JCR
+compliant content repository (for example,
+http://jackrabbit.apache.org/[Apache Jackrabbit]) with its producer, or
+register an EventListener with the consumer.
+////
+JCR コンポーネントはプロデューサで用いると JCR 準拠のコンテンツリポジトリ（たとえば、http://jackrabbit.apache.org/[Apache Jackrabbit]）への追加や読み取りができる。
+また、コンシューマでイベントリスナを登録できる。
+
+////
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+////
+Maven を使用している場合は、このコンポーネントのために次の依存性を pom.xml に追加する必要がある:
+
+////
+[source,java]
+------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jcr</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+------------------------------------------------------------
+////
+[source,java]
+------------------------------------------------------------
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jcr</artifactId>
+    <version>x.x.x</version>
+    <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+------------------------------------------------------------
+
+
+////
+== URI format
+////
+== URI 書式
+
+[source,java]
+-------------------------------------------
+jcr://user:password@repository/path/to/node
+-------------------------------------------
+
+////
+*Consumer added*
+////
+*コンシューマ*
+
+////
+You can use consumer as an EventListener in
+JCR or a producer to read a node by identifier.
+////
+JCR のイベントリスナとしてコンシューマが使用できる。
+またプロデューサが識別子でノードを読み込むために使用できる。
+
+////
+== Usage
+////
+== 使用方法
+
+
+////
+The `repository` element of the URI is used to look up the JCR
+`Repository` object in the Camel context registry.
+////
+URI 中の `repository` 要素は JCR `Repository` オブジェクトを Camel コンテキストレジストリ内で検索するために使われる。
+
+////
+=== JCR Options
+////
+=== JCR オプション
+
+
+
+// component options: START
+////
+The JCR component supports 3 options, which are listed below.
+////
+JCR コンポーネントは、以下の 3 つのオプションを持つ。
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *basicPropertyBinding* (advanced) | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *basicPropertyBinding* (上級者向け) | エンドポイントが基本的なプロパティバインディング（Camel 2.x）を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *lazyStartProducer* (プロデューサ) | （最初のメッセージで）遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *bridgeErrorHandler* (コンシューマ) | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようとして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | boolean
+|===
+
+// component options: END
+
+
+
+
+// endpoint options: START
+////
+The JCR endpoint is configured using URI syntax:
+////
+JCR エンドポイントは URI シンタックスを用いて設定される。
+
+----
+jcr:host/base
+----
+
+////
+with the following path and query parameters:
+////
+次のパスとクエリパラメータが利用可能である。
+
+////
+=== Path Parameters (2 parameters):
+////
+=== パスパラメータ （2 個）:
+
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *host* | *Required* Name of the javax.jcr.Repository to lookup from the Camel registry to be used. |  | String
+| *base* | Get the base node when accessing the repository |  | String
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *host* | *必須* 使用される Camel レジストリから検索される javax.jcr.Repository の名前。 |  | String
+| *base* | レジストリにアクセスする際のベースノードを取得する。 |  | String
+|===
+
+
+////
+=== Query Parameters (16 parameters):
+////
+=== クエリパラメータ （16 個）:
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *deep* (common) | When isDeep is true, events whose associated parent node is at absPath or within its subgraph are received. | false | boolean
+| *eventTypes* (common) | eventTypes (a combination of one or more event types encoded as a bit mask value such as javax.jcr.observation.Event.NODE_ADDED, javax.jcr.observation.Event.NODE_REMOVED, etc.). |  | int
+| *nodeTypeNames* (common) | When a comma separated nodeTypeName list string is set, only events whose associated parent node has one of the node types (or a subtype of one of the node types) in this list will be received. |  | String
+| *noLocal* (common) | If noLocal is true, then events generated by the session through which the listener was registered are ignored. Otherwise, they are not ignored. | false | boolean
+| *password* (common) | Password for login |  | String
+| *sessionLiveCheckInterval* (common) | Interval in milliseconds to wait before each session live checking The default value is 60000 ms. | 60000 | long
+| *sessionLiveCheckIntervalOn Start* (common) | Interval in milliseconds to wait before the first session live checking. The default value is 3000 ms. | 3000 | long
+| *username* (common) | Username for login |  | String
+| *uuids* (common) | When a comma separated uuid list string is set, only events whose associated parent node has one of the identifiers in the comma separated uuid list will be received. |  | String
+| *workspaceName* (common) | The workspace to access. If it's not specified then the default one will be used |  | String
+| *bridgeErrorHandler* (consumer) | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | boolean
+| *exceptionHandler* (consumer) | To let the consumer use a custom ExceptionHandler. Notice if the option bridgeErrorHandler is enabled then this option is not in use. By default the consumer will deal with exceptions, that will be logged at WARN or ERROR level and ignored. |  | ExceptionHandler
+| *exchangePattern* (consumer) | Sets the exchange pattern when the consumer creates an exchange. |  | ExchangePattern
+| *lazyStartProducer* (producer) | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | boolean
+| *basicPropertyBinding* (advanced) | Whether the endpoint should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | boolean
+| *synchronous* (advanced) | Sets whether synchronous processing should be strictly used, or Camel is allowed to use asynchronous processing (if supported). | false | boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| 名前 | 説明 | デフォルト値 | 型
+| *deep* （共通） | true に設定されている場合に、絶対パスでの親ノード、もしくは部分グラフに関連づいたイベントが受信される。 | false | boolean
+| *eventTypes* （共通） | イベントタイプ（1 つもしくは複数の javax.jcr.observation.Event.NODE_ADDED、javax.jcr.observation.Event.NODE_REMOVED のようなイベントタイプのビットマスクとしてエンコードされた組み合わせ） |  | int
+| *nodeTypeNames* （共通） | カンマ区切りの nodeTypeName 文字列一覧が設定された場合、そのノードタイプの 1 つ（もしくはノードタイプのサブタイプの 1 つ）の識別子を持つ親ノードに関連づいているイベントのみ受信される。 |  | String
+| *noLocal* （共通） | true の場合は、リスナが登録されているセッションで生成されたイベントは無視される。そうでない場合は無視されない。 | false | boolean
+| *password* （共通） | ログインのためのパスワード |  | String
+| *sessionLiveCheckInterval* （共通） | それぞれのセッションの生存チェックの前に待機するミリ秒でのインターバル。 デフォルト値は 60000ms である。 | 60000 | long
+| *sessionLiveCheckIntervalOn Start* （共通） | 最初のセッションの生存チェックの前に待機するミリ秒でのインターバル。デフォルト値は 3000ms である。 | 3000 | long
+| *username* （共通） | ログインのためのユーザ名 |  | String
+| *uuids* （共通） | カンマ区切りの UUID 一覧が指定された場合は、その UUID 一覧の 1 つの識別子を持つ親ノードに関連づいているイベントのみ受信される。 |  | String
+| *workspaceName* （共通） | アクセスするワークプレース。指定されていない場合はデフォルトのものが使用される。 |  | String
+| *bridgeErrorHandler* （コンシューマ） | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようとして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | boolean
+| *exceptionHandler* （コンシューマ） | コンシューマにカスタムの例外ハンドラを使用させる。オペレーションで bridgeErrorHandler が有効になっている場合は使用されないことに注意すること。デフォルトではコンシューマは例外を処理し WARN もしくは ERROR レベルでログ出力され、無視される。 |  | ExceptionHandler
+| *exchangePattern* （コンシューマ） | コンシューマが exchange を生成したときに設定する exchange パターン。 |  | ExchangePattern
+| *lazyStartProducer* （プロデューサ） | (最初のメッセージで)遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | boolean
+| *basicPropertyBinding* （上級者向け） | エンドポイントが基本的なプロパティバインディング(Camel 2.x)を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | boolean
+| *synchronous* （上級者向け） | 厳密に同期処理が使われるか否かを設定する。(サポートしている場合は)Camel は非同期処理を使用することを許可される。 | false | boolean
+|===
+
+// endpoint options: END
+// spring-boot-auto-configure options: START
+== Spring Boot Auto-Configuration
+
+////
+When using Spring Boot make sure to use the following Maven dependency to have support for auto configuration:
+////
+Spring Boot を使用する場合は、自動設定を有効にするために、次の Maven 依存性を使用する:
+
+////
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-jcr-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- use the same version as your Camel core version -->
+</dependency>
+----
+////
+[source,xml]
+----
+<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-jcr-starter</artifactId>
+  <version>x.x.x</version>
+  <!-- Camel コアバージョンと同じバージョンを使うこと。 -->
+</dependency>
+----
+
+
+////
+The component supports 4 options, which are listed below.
+////
+コンポーネントは以下のリストにある 4 つのオプションをサポートしている。
+
+
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *camel.component.jcr.basic-property-binding* | Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities | false | Boolean
+| *camel.component.jcr.bridge-error-handler* | Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored. | false | Boolean
+| *camel.component.jcr.enabled* | Whether to enable auto configuration of the jcr component. This is enabled by default. |  | Boolean
+| *camel.component.jcr.lazy-start-producer* | Whether the producer should be started lazy (on the first message). By starting lazy you can use this to allow CamelContext and routes to startup in situations where a producer may otherwise fail during starting and cause the route to fail being started. By deferring this startup to be lazy then the startup failure can be handled during routing messages via Camel's routing error handlers. Beware that when the first message is processed then creating and starting the producer may take a little time and prolong the total processing time of the processing. | false | Boolean
+|===
+////
+[width="100%",cols="2,5,^1,2",options="header"]
+|===
+| Name | Description | Default | Type
+| *camel.component.jcr.basic-property-binding* | エンドポイントが基本的なプロパティバインディング（Camel 2.x）を使用するか付加的な機能を使用する、より新しいプロパティバインディングを使用するかを指定する。 | false | Boolean
+| *camel.component.jcr.bridge-error-handler* | コンシューマが Camel のルーティングエラーハンドラに渡すことを許可する。これはコンシューマがメッセージを受信しようとして例外が発生した場合に、メッセージとして処理されルーティングエラーハンドラに渡されることを意味する。デフォルトでは、コンシューマは例外を扱うのに org.apache.camel.spi.ExceptionHandler を使用し、WARN もしくは ERROR レベルでログ出力され、無視される。 | false | Boolean
+| *camel.component.jcr.enabled* | jcr コンポーネントの auto configuration を有効化するか否かを指定する。デフォルトで有効になっている。 |  | Boolean
+| *camel.component.jcr.lazy-start-producer* | （最初のメッセージで）遅延でプロデューサが開始されるか否かを指定する。遅延で開始することにより、CamelContext とルートがプロデューサが開始時に失敗する、もしくはルートが失敗するかもしれない状況において開始できるようになる。遅延で開始すると、開始時の失敗は Camel のルーティングエラーハンドラを介してメッセージがルーティングされて扱われる。最初のメッセージが処理されたときに、プロデューサを作成して開始するには少し時間が掛かり、全体の処理時間は長くなることに注意すること。 | false | Boolean
+|===
+// spring-boot-auto-configure options: END
+
+////
+== Example
+////
+== 例
+
+////
+The snippet below creates a node named `node` under the `/home/test`
+node in the content repository. One additional property is added to the
+node as well: `my.contents.property` which will contain the body of the
+message being sent.
+////
+下記のスニペットではコンテンツリポジトリ内の `/home/test` ノード配下に `node` という名前のノードを作成している。
+追加のプロパティ `my.contents.property` を 1 つノードに追加している。これは送信されたメッセージのボディを含んでいる。
+
+
+[source,java]
+------------------------------------------------------------------------
+from("direct:a").setHeader(JcrConstants.JCR_NODE_NAME, constant("node"))
+    .setHeader("my.contents.property", body())
+    .to("jcr://user:pass@repository/home/test");
+------------------------------------------------------------------------
+
+ 
+////
+The following code will register an EventListener under the path
+import-application/inbox for Event.NODE_ADDED and Event.NODE_REMOVED
+events (event types 1 and 2, both masked as 3) and listening deep for
+all the children.
+////
+次のコードは、Event.NODE_ADDED と Event.NODE_REMOVED イベント（イベントタイプ 1 と 2。両方は 3）に対して、パス import-application/inbox 配下にイベントリスナを登録する。
+さらにパス配下のすべての子に対してリッスンする。
+
+[source,xml]
+---------------------------------------------------------------------------------------------
+<route>
+    <from uri="jcr://user:pass@repository/import-application/inbox?eventTypes=3&deep=true" />
+    <to uri="direct:execute-import-application" />
+</route>
+---------------------------------------------------------------------------------------------
+
